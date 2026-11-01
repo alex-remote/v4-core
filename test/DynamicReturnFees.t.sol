@@ -53,7 +53,7 @@ contract TestDynamicReturnFees is Test, Deployers {
     }
 
     function test_fuzz_dynamicReturnSwapFee(uint24 fee) public {
-        // hook will handle adding the override flag
+        // hook 会负责添加覆盖（override）标志位
         dynamicReturnFeesHook.setFee(fee);
 
         uint24 actualFee = fee.removeOverrideFlag();
@@ -71,7 +71,7 @@ contract TestDynamicReturnFees is Test, Deployers {
         assertEq(result.amount0(), amountSpecified);
 
         if (actualFee > LPFeeLibrary.MAX_LP_FEE) {
-            // if the fee is too large, the fee from beforeSwap is not used (and remains at 0 -- the default value)
+            // 如果手续费过大，则不会使用 beforeSwap 返回的手续费（手续费保持为 0，即默认值）
             assertApproxEqAbs(uint256(int256(result.amount1())), uint256(int256(-result.amount0())), 1 wei);
         } else {
             assertApproxEqAbs(
@@ -106,17 +106,17 @@ contract TestDynamicReturnFees is Test, Deployers {
     }
 
     function test_dynamicReturnSwapFee_notUsedIfPoolIsStaticFee() public {
-        key.fee = 3000; // static fee
-        dynamicReturnFeesHook.setFee(1000); // 0.10% fee is NOT used because the pool has a static fee
+        key.fee = 3000; // 静态手续费
+        dynamicReturnFeesHook.setFee(1000); // 由于池子使用静态手续费，0.10% 的手续费不会被使用
 
         initPoolAndAddLiquidity(currency0, currency1, IHooks(address(dynamicReturnFeesHook)), 3000, SQRT_PRICE_1_1);
         assertEq(_fetchPoolSwapFee(key), 3000);
 
-        // despite returning a valid swap fee (1000), the static fee is used
+        // 尽管返回了有效的兑换手续费（1000），实际仍使用静态手续费
         int256 amountSpecified = -10000;
         BalanceDelta result = swap(key, true, amountSpecified, ZERO_BYTES);
 
-        // after swapping ~1:1, the amount out (amount1) should be approximately 0.30% less than the amount specified
+        // 以约 1:1 兑换后，输出数量（amount1）应比指定数量少约 0.30%
         assertEq(result.amount0(), amountSpecified);
         assertApproxEqAbs(
             uint256(int256(result.amount1())), FullMath.mulDiv(uint256(-amountSpecified), (1e6 - 3000), 1e6), 1 wei
@@ -124,9 +124,9 @@ contract TestDynamicReturnFees is Test, Deployers {
     }
 
     function test_dynamicReturnSwapFee_notStored() public {
-        // fees returned by beforeSwap are not written to storage
+        // beforeSwap 返回的手续费不会写入存储
 
-        // create a new pool with an initial fee of 123
+        // 创建一个初始手续费为 123 的新池子
         key.tickSpacing = 30;
         manager.initialize(key, SQRT_PRICE_1_1);
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, ZERO_BYTES);
@@ -134,7 +134,7 @@ contract TestDynamicReturnFees is Test, Deployers {
         dynamicReturnFeesHook.forcePoolFeeUpdate(key, initialFee);
         assertEq(_fetchPoolSwapFee(key), initialFee);
 
-        // swap with a different fee
+        // 使用不同的手续费进行兑换
         uint24 newFee = 3000;
         dynamicReturnFeesHook.setFee(newFee);
 
@@ -144,18 +144,18 @@ contract TestDynamicReturnFees is Test, Deployers {
             uint256(int256(result.amount1())), FullMath.mulDiv(uint256(-amountSpecified), (1e6 - newFee), 1e6), 1 wei
         );
 
-        // the fee from beforeSwap is not stored
+        // beforeSwap 返回的手续费不会被存储
         assertEq(_fetchPoolSwapFee(key), initialFee);
     }
 
     function test_dynamicReturnSwapFee_revertIfLPFeeTooLarge() public {
         assertEq(_fetchPoolSwapFee(key), 0);
 
-        // hook adds the override flag
+        // hook 会添加覆盖（override）标志位
         uint24 fee = 1000001;
         dynamicReturnFeesHook.setFee(fee);
 
-        // a large fee is not used
+        // 过大的手续费不会被使用
         int256 amountSpecified = -10000;
         vm.expectRevert(abi.encodeWithSelector(LPFeeLibrary.LPFeeTooLarge.selector, fee));
         swap(key, true, amountSpecified, ZERO_BYTES);

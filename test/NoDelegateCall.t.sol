@@ -11,7 +11,7 @@ import {NoDelegateCall} from "../src/NoDelegateCall.sol";
 import {Deployers} from "./utils/Deployers.sol";
 
 contract TestDelegateCall is Test, Deployers {
-    // override to use ProxyPoolManager
+    // 重写以使用 ProxyPoolManager
     function deployFreshManager() internal virtual override {
         IPoolManager delegateManager = new PoolManager(address(this));
         manager = new ProxyPoolManager(address(delegateManager));
@@ -43,7 +43,7 @@ contract TestDelegateCall is Test, Deployers {
         vm.expectRevert(NoDelegateCall.DelegateCallNotAllowed.selector);
         (bool success,) =
             address(noDelegateCallTest).delegatecall(abi.encode(noDelegateCallTest.cannotBeDelegateCalled.selector));
-        // note vm.expectRevert inverts success, so a true result here means it reverted
+        // 注意：vm.expectRevert 会反转 success，因此这里结果为 true 表示调用发生了回滚（revert）
         assertTrue(success);
     }
 
@@ -56,7 +56,7 @@ contract TestDelegateCall is Test, Deployers {
         (bool success,) = address(noDelegateCallTest).delegatecall(
             abi.encode(noDelegateCallTest.callsIntoNoDelegateCallFunction.selector)
         );
-        // note vm.expectRevert inverts success, so a true result here means it reverted
+        // 注意：vm.expectRevert 会反转 success，因此这里结果为 true 表示调用发生了回滚（revert）
         assertTrue(success);
     }
 

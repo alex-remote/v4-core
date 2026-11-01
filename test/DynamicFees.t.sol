@@ -85,7 +85,7 @@ contract TestDynamicFees is Test, Deployers {
     function test_initialize_initializesFeeTo0() public {
         key.hooks = dynamicFeesNoHooks;
 
-        // this fee is not fetched as theres no afterInitialize hook
+        // 由于没有 afterInitialize hook，该手续费不会被获取
         dynamicFeesNoHooks.setFee(1000000);
 
         manager.initialize(key, SQRT_PRICE_1_1);
@@ -106,10 +106,10 @@ contract TestDynamicFees is Test, Deployers {
     }
 
     function test_updateDynamicLPFee_revertsIfPoolHasStaticFee() public {
-        key.fee = 3000; // static fee
+        key.fee = 3000; // 静态手续费
         dynamicFeesHooks.setFee(123);
 
-        // afterInitialize will try to update the fee, and fail
+        // afterInitialize 会尝试更新手续费，但会失败
         vm.expectRevert(
             abi.encodeWithSelector(
                 CustomRevert.WrappedError.selector,

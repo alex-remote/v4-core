@@ -22,7 +22,7 @@
 | 英文 Markdown 文档（生成 `_zh.md`） | 4 | 179 |
 | **合计** | **148** | **19573** |
 
-**总进度：101 / 148 个文件已完成**
+**总进度：110 / 148 个文件已完成**
 
 ## 分批进度明细
 
@@ -77,9 +77,9 @@
 - [x] `src/libraries/NonzeroDeltaCount.sol` — 原 35 行 | 译后 35 行 ✅
 - [x] `src/libraries/ParseBytes.sol` — 原 29 行 | 译后 29 行 ✅
 
-### 批次 B08（1 个文件，613 行）— 状态：进行中（子代理已派发）
+### 批次 B08（1 个文件，613 行）— 状态：已完成 ✅
 
-- [ ] `src/libraries/Pool.sol` — 原 613 行 | 译后 — 行
+- [x] `src/libraries/Pool.sol` — 原 613 行 | 译后 613 行 ✅
 
 ### 批次 B09（3 个文件，210 行）— 状态：已完成 ✅
 
@@ -164,15 +164,15 @@
 - [x] `src/types/Slot0.sol` — 原 94 行 | 译后 94 行 ✅
 - [x] `test/CurrencyReserves.t.sol` — 原 58 行 | 译后 58 行 ✅
 
-### 批次 B18（7 个文件，1752 行）— 状态：进行中（子代理已派发）
+### 批次 B18（7 个文件，1752 行）— 状态：已完成 ✅
 
-- [ ] `test/CustomAccounting.t.sol` — 原 382 行 | 译后 — 行
-- [ ] `test/DynamicFees.t.sol` — 原 343 行 | 译后 — 行
-- [ ] `test/DynamicReturnFees.t.sol` — 原 168 行 | 译后 — 行
-- [ ] `test/ERC6909Claims.t.sol` — 原 404 行 | 译后 — 行
-- [ ] `test/Extsload.t.sol` — 原 60 行 | 译后 — 行
-- [ ] `test/ModifyLiquidity.t.sol` — 原 312 行 | 译后 — 行
-- [ ] `test/NoDelegateCall.t.sol` — 原 83 行 | 译后 — 行
+- [x] `test/CustomAccounting.t.sol` — 原 382 行 | 译后 382 行 ✅
+- [x] `test/DynamicFees.t.sol` — 原 343 行 | 译后 343 行 ✅
+- [x] `test/DynamicReturnFees.t.sol` — 原 168 行 | 译后 168 行 ✅
+- [x] `test/ERC6909Claims.t.sol` — 原 404 行 | 译后 404 行 ✅
+- [x] `test/Extsload.t.sol` — 原 60 行 | 译后 60 行 ✅
+- [x] `test/ModifyLiquidity.t.sol` — 原 312 行 | 译后 312 行 ✅
+- [x] `test/NoDelegateCall.t.sol` — 原 83 行 | 译后 83 行 ✅
 
 ### 批次 B19（3 个文件，983 行）— 状态：已完成 ✅
 
@@ -247,9 +247,9 @@
 - [ ] `docs/whitepaper/latex/main.tex` — 原 312 行 | 译后 — 行
 - [ ] `docs/whitepaper/latex/main-zh.tex` — 原 305 行 | 译后 — 行
 
-### 批次 B26（1 个文件，104 行）— 状态：排队中（等待空闲子代理）
+### 批次 B26（1 个文件，104 行）— 状态：已完成 ✅
 
-- [ ] `README.md` — 原 104 行 → `README_zh.md` | 译文 — 行
+- [x] `README.md` — 原 104 行 → `README_zh.md` | 译文 104 行 ✅
 
 ### 批次 B27（3 个文件，75 行）— 状态：排队中（等待空闲子代理）
 

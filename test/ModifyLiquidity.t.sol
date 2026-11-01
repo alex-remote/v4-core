@@ -24,8 +24,8 @@ import {Logger} from "./utils/Logger.sol";
 contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers {
     using StateLibrary for IPoolManager;
 
-    PoolKey simpleKey; // vanilla pool key
-    PoolId simplePoolId; // id for vanilla pool key
+    PoolKey simpleKey; // 普通池子 key
+    PoolId simplePoolId; // 普通池子 key 对应的 id
 
     bytes32 SALT = hex"CAFF";
 
@@ -44,7 +44,7 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
     }
 
     /*//////////////////////////////////////////////////////////////
-                            Fuzz Add Liquidity
+                            模糊测试：添加流动性
     //////////////////////////////////////////////////////////////*/
 
     /// forge-config: default.fuzz.runs = 10
@@ -54,8 +54,8 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
     function test_ffi_fuzz_addLiquidity_defaultPool_ReturnsCorrectLiquidityDelta(ModifyLiquidityParams memory paramSeed)
         public
     {
-        // Sanitize the fuzzed params to get valid tickLower, tickUpper, and liquidityDelta.
-        // We use SQRT_PRICE_1_1 because the simpleKey pool has initial sqrtPrice of SQRT_PRICE_1_1.
+        // 清洗模糊测试生成的参数，以得到有效的 tickLower、tickUpper 和 liquidityDelta。
+        // 这里使用 SQRT_PRICE_1_1，因为 simpleKey 池子的初始 sqrtPrice 就是 SQRT_PRICE_1_1。
         ModifyLiquidityParams memory params = createFuzzyLiquidityParams(simpleKey, paramSeed, SQRT_PRICE_1_1);
 
         logParams(params);
@@ -68,13 +68,13 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
         _checkError(delta.amount1(), jsDelta1, "amount1 is off by more than one pip");
     }
 
-    // Static edge case, no fuzz test, to make sure we test max tickspacing.
+    // 静态边界用例（非模糊测试），确保覆盖最大 tick 间距。
     function test_ffi_addLiqudity_weirdPool_0_returnsCorrectLiquidityDelta() public {
-        // Use a pool with TickSpacing of MAX_TICK_SPACING
+        // 使用 TickSpacing 为 MAX_TICK_SPACING 的池子
         (PoolKey memory wp0, PoolId wpId0) =
             initPool(currency0, currency1, IHooks(address(0)), 500, TickMath.MAX_TICK_SPACING, SQRT_PRICE_1_1);
 
-        // Set the params to add random amount of liquidity to random tick boundary.
+        // 设置参数，在随机的 tick 边界上添加随机数量的流动性。
         int24 tickUpper = TickMath.MAX_TICK_SPACING * 4;
         int24 tickLower = TickMath.MAX_TICK_SPACING * -9;
         ModifyLiquidityParams memory params = ModifyLiquidityParams({
@@ -92,13 +92,13 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
         _checkError(delta.amount1(), jsDelta1, "amount1 is off by more than one pip");
     }
 
-    // Static edge case, no fuzz test, to make sure we test min tick spacing.
+    // 静态边界用例（非模糊测试），确保覆盖最小 tick 间距。
     function test_ffi_addLiqudity_weirdPool_1_returnsCorrectLiquidityDelta() public {
-        // Use a pool with TickSpacing of MIN_TICK_SPACING
+        // 使用 TickSpacing 为 MIN_TICK_SPACING 的池子
         (PoolKey memory wp0, PoolId wpId0) =
             initPool(currency0, currency1, IHooks(address(0)), 551, TickMath.MIN_TICK_SPACING, SQRT_PRICE_1_1);
 
-        // Set the params to add random amount of liquidity to random tick boundary.
+        // 设置参数，在随机的 tick 边界上添加随机数量的流动性。
         int24 tickUpper = TickMath.MIN_TICK_SPACING * 17;
         int24 tickLower = TickMath.MIN_TICK_SPACING * 9;
         ModifyLiquidityParams memory params = ModifyLiquidityParams({
@@ -144,10 +144,10 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
         return (jsDelta0, jsDelta1);
     }
 
-    // assert solc/js result is at most off by 1/100th of a bip (aka one pip)
+    // 断言 solc/js 的结果最多相差 1/100 个 bip（即一个 pip）
     function _checkError(int128 solc, int128 js, string memory errMsg) public pure {
         if (solc != js) {
-            // Ensures no div by 0 in the case of one-sided liquidity adds.
+            // 确保在单边添加流动性时不会出现除以 0。
             (int128 gtResult, int128 ltResult) = js > solc ? (js, solc) : (solc, js);
             int128 resultsDiff = gtResult - ltResult;
             assertEq(resultsDiff * ONE_PIP / js, 0, errMsg);
@@ -206,7 +206,7 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
         assertEq(liquidityNoSalt, 0);
         assertEq(liquiditySalt, 0);
 
-        // Modify the liquidity with the salt.
+        // 使用 salt 修改流动性。
         modifyLiquidityRouter.modifyLiquidity(simpleKey, LIQ_PARAM_SALT, ZERO_BYTES);
 
         (liquidityNoSalt,,) = manager.getPositionInfo(
@@ -217,10 +217,10 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
             simplePoolId, address(modifyLiquidityRouter), LIQ_PARAM_SALT.tickLower, LIQ_PARAM_SALT.tickUpper, SALT
         );
 
-        assertEq(liquidityNoSalt, 0); // This position does not have liquidity.
-        assertEq(liquiditySalt, uint128(uint256(LIQ_PARAM_SALT.liquidityDelta))); // This position does.
+        assertEq(liquidityNoSalt, 0); // 该头寸没有流动性。
+        assertEq(liquiditySalt, uint128(uint256(LIQ_PARAM_SALT.liquidityDelta))); // 该头寸有流动性。
 
-        modifyLiquidityRouter.modifyLiquidity(simpleKey, LIQ_PARAM_NO_SALT, ZERO_BYTES); // Now the positions should have the same liquidity.
+        modifyLiquidityRouter.modifyLiquidity(simpleKey, LIQ_PARAM_NO_SALT, ZERO_BYTES); // 现在两个头寸的流动性应当相同。
 
         (liquidityNoSalt,,) = manager.getPositionInfo(
             simplePoolId, address(modifyLiquidityRouter), LIQ_PARAM_NO_SALT.tickLower, LIQ_PARAM_NO_SALT.tickUpper, 0
@@ -230,7 +230,7 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
             simplePoolId, address(modifyLiquidityRouter), LIQ_PARAM_SALT.tickLower, LIQ_PARAM_SALT.tickUpper, SALT
         );
 
-        // positionSalt should still only have the original liquidity deposited to it
+        // positionSalt 应当仍然只有最初存入的流动性
         assertEq(liquiditySalt, uint128(uint256(LIQ_PARAM_SALT.liquidityDelta)));
         assertEq(liquidityNoSalt, liquiditySalt);
 
@@ -248,7 +248,7 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
     }
 
     function test_modifyLiquidity_sameSalt_differentLiquidityRouters_doNotEditSamePosition() public {
-        // Set up new router.
+        // 设置新的路由合约。
         PoolModifyLiquidityTest modifyLiquidityRouter2 = new PoolModifyLiquidityTest(manager);
 
         MockERC20(Currency.unwrap(currency0)).approve(address(modifyLiquidityRouter2), Constants.MAX_UINT256);
@@ -257,7 +257,7 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
         ModifyLiquidityParams memory LIQ_PARAM_SALT_2 =
             ModifyLiquidityParams({tickLower: -120, tickUpper: 120, liquidityDelta: 2e18, salt: SALT});
 
-        // Get the uninitialized positions and assert they have no liquidity.
+        // 获取尚未初始化的头寸，并断言它们没有流动性。
         (uint128 liquiditySalt,,) = manager.getPositionInfo(
             simplePoolId, address(modifyLiquidityRouter), LIQ_PARAM_SALT.tickLower, LIQ_PARAM_SALT.tickUpper, SALT
         );
@@ -269,7 +269,7 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
         assertEq(liquiditySalt, 0);
         assertEq(liquiditySalt2, 0);
 
-        // Modify the liquidity with the salt with the first router.
+        // 通过第一个路由合约，使用 salt 修改流动性。
         modifyLiquidityRouter.modifyLiquidity(simpleKey, LIQ_PARAM_SALT, ZERO_BYTES);
 
         (uint128 updatedLiquiditySalt,,) = manager.getPositionInfo(
@@ -280,11 +280,11 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
             simplePoolId, address(modifyLiquidityRouter2), LIQ_PARAM_SALT_2.tickLower, LIQ_PARAM_SALT_2.tickUpper, SALT
         );
 
-        // Assert only the liquidity from the first router is updated.
+        // 断言只有第一个路由合约对应的流动性被更新。
         assertEq(updatedLiquiditySalt, uint128(uint256(LIQ_PARAM_SALT.liquidityDelta)));
         assertEq(updatedLiquiditySalt2, 0);
 
-        // Modify the liquidity with the second router.
+        // 通过第二个路由合约修改流动性。
         modifyLiquidityRouter2.modifyLiquidity(simpleKey, LIQ_PARAM_SALT_2, ZERO_BYTES);
 
         (updatedLiquiditySalt2,,) = manager.getPositionInfo(
@@ -294,7 +294,7 @@ contract ModifyLiquidityTest is Test, Logger, Deployers, JavascriptFfi, Fuzzers 
             simplePoolId, address(modifyLiquidityRouter), LIQ_PARAM_SALT.tickLower, LIQ_PARAM_SALT.tickUpper, SALT
         );
 
-        // Assert only the liquidity from the second router is updated.
+        // 断言只有第二个路由合约对应的流动性被更新。
         assertEq(updatedLiquiditySalt2, uint128(uint256(LIQ_PARAM_SALT_2.liquidityDelta)));
         assertEq(updatedLiquiditySalt, uint128(uint256(LIQ_PARAM_SALT.liquidityDelta)));
     }

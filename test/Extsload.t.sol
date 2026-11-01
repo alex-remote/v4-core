@@ -49,7 +49,7 @@ contract ExtsloadTest is Test {
         }
         bytes32[] memory values = loadable.extsload(slots);
         assertEq(values, expected);
-        // test with dirty bits
+        // 使用脏位（dirty bits）进行测试
         bytes memory data = abi.encodeWithSignature("extsload(bytes32[])", (slots));
         bytes memory malformedData = bytes.concat(data, dirtyBits);
         (bool success, bytes memory returnData) = address(loadable).staticcall(malformedData);

@@ -47,7 +47,7 @@ contract ERC6909ClaimsTest is Test {
         token.burnFrom(address(this), 1337, 100);
     }
 
-    /// ---- Tests copied from solmate ---- ///
+    /// ---- 以下测试复制自 solmate ---- ///
 
     function testMint() public {
         token.mint(address(0xBEEF), 1337, 100);

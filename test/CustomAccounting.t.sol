@@ -68,7 +68,7 @@ contract CustomAccountingTest is Test, Deployers {
         (key,) = initPoolAndAddLiquidity(currency0, currency1, IHooks(hookAddr), 100, SQRT_PRICE_1_1);
     }
 
-    // ------------------------ SWAP  ------------------------
+    // ------------------------ 兑换（SWAP）  ------------------------
 
     function test_swap_afterSwapFeeOnUnspecified_exactInput() public {
         _setUpFeeTakingPool();
@@ -83,8 +83,8 @@ contract CustomAccountingTest is Test, Deployers {
         swapRouter.swap(key, params, testSettings, ZERO_BYTES);
         vm.snapshotGasLastCall("swap CA fee on unspecified");
 
-        // input is 1000 for output of 998 with this much liquidity available
-        // plus a fee of 1.23% on unspecified (output) => (998*123)/10000 = 12
+        // 在当前可用流动性下，输入 1000 可得到 998 的输出
+        // 再加上对非指定（输出）代币收取的 1.23% 手续费 => (998*123)/10000 = 12
         assertEq(currency0.balanceOf(address(this)), balanceBefore0 - amountToSwap, "amount 0");
         assertEq(currency1.balanceOf(address(this)), balanceBefore1 + (998 - 12), "amount 1");
     }
@@ -102,8 +102,8 @@ contract CustomAccountingTest is Test, Deployers {
             SwapParams({zeroForOne: true, amountSpecified: int256(amountToSwap), sqrtPriceLimitX96: SQRT_PRICE_1_2});
         swapRouter.swap(key, params, testSettings, ZERO_BYTES);
 
-        // input is 1002 for output of 1000 with this much liquidity available
-        // plus a fee of 1.23% on unspecified (input) => (1002*123)/10000 = 12
+        // 在当前可用流动性下，输入 1002 可得到 1000 的输出
+        // 再加上对非指定（输入）代币收取的 1.23% 手续费 => (1002*123)/10000 = 12
         assertEq(currency0.balanceOf(address(this)), balanceBefore0 - 1002 - 12, "amount 0");
         assertEq(currency1.balanceOf(address(this)), balanceBefore1 + amountToSwap, "amount 1");
     }
@@ -111,7 +111,7 @@ contract CustomAccountingTest is Test, Deployers {
     function test_swap_beforeSwapNoOpsSwap_exactInput() public {
         _setUpCustomCurvePool();
 
-        // add liquidity by sending tokens straight into the contract
+        // 通过直接向合约转入代币来添加流动性
         key.currency0.transfer(hook, 10e18);
         key.currency1.transfer(hook, 10e18);
 
@@ -126,7 +126,7 @@ contract CustomAccountingTest is Test, Deployers {
         swapRouter.swap(key, params, testSettings, ZERO_BYTES);
         vm.snapshotGasLastCall("swap CA custom curve + swap noop");
 
-        // the custom curve hook is 1-1 linear
+        // 该自定义曲线 hook 是 1-1 线性的
         assertEq(currency0.balanceOf(address(this)), balanceBefore0 - amountToSwap, "amount 0");
         assertEq(currency1.balanceOf(address(this)), balanceBefore1 + amountToSwap, "amount 1");
     }
@@ -134,7 +134,7 @@ contract CustomAccountingTest is Test, Deployers {
     function test_swap_beforeSwapNoOpsSwap_exactOutput() public {
         _setUpCustomCurvePool();
 
-        // add liquidity by sending tokens straight into the contract
+        // 通过直接向合约转入代币来添加流动性
         key.currency0.transfer(hook, 10e18);
         key.currency1.transfer(hook, 10e18);
 
@@ -148,12 +148,12 @@ contract CustomAccountingTest is Test, Deployers {
             SwapParams({zeroForOne: true, amountSpecified: int256(amountToSwap), sqrtPriceLimitX96: SQRT_PRICE_1_2});
         swapRouter.swap(key, params, testSettings, ZERO_BYTES);
 
-        // the custom curve hook is 1-1 linear
+        // 该自定义曲线 hook 是 1-1 线性的
         assertEq(currency0.balanceOf(address(this)), balanceBefore0 - amountToSwap, "amount 0");
         assertEq(currency1.balanceOf(address(this)), balanceBefore1 + amountToSwap, "amount 1");
     }
 
-    // maximum available liquidity in each direction for the pool in test_fuzz_swap_beforeSwap_returnsDeltaSpecified
+    // test_fuzz_swap_beforeSwap_returnsDeltaSpecified 中所用池子在每个方向上的最大可用流动性
     int128 maxPossibleIn_fuzz_test = -6018336102428409;
     int128 maxPossibleOut_fuzz_test = 5981737760509662;
 
@@ -162,27 +162,27 @@ contract CustomAccountingTest is Test, Deployers {
         int256 amountSpecified,
         bool zeroForOne
     ) public {
-        // ------------------------ SETUP ------------------------
+        // ------------------------ 准备（SETUP） ------------------------
         Currency specifiedCurrency;
         bool isExactIn;
         _setUpDeltaReturnFuzzPool();
 
-        // initialize the pool and give the hook tokens to pay into swaps
+        // 初始化池子，并给 hook 转入代币，用于在兑换中支付
         key.currency0.transfer(hook, type(uint128).max);
         key.currency1.transfer(hook, type(uint128).max);
 
-        // bound amount specified to be a fair amount less than the amount of liquidity we have
+        // 将指定数量限定为明显小于我们所拥有的流动性数量
         amountSpecified = int128(bound(amountSpecified, -3e11, 3e11));
         isExactIn = amountSpecified < 0;
         specifiedCurrency = (isExactIn == zeroForOne) ? key.currency0 : key.currency1;
 
-        // bound delta in specified to not take more than the reserves available, nor be the minimum int to
-        // stop the hook reverting on take/settle
+        // 限定指定代币一侧的 delta，使其既不超过可用储备，也不等于 int 最小值，以
+        // 防止 hook 在提取/结算（take/settle）时回滚（revert）
         uint128 reservesOfSpecified = uint128(specifiedCurrency.balanceOf(address(manager)));
         hookDeltaSpecified = int128(bound(hookDeltaSpecified, type(int128).min + 1, int128(reservesOfSpecified)));
         DeltaReturningHook(hook).setDeltaSpecified(hookDeltaSpecified);
 
-        // setup swap variables
+        // 设置兑换所需的变量
         PoolSwapTest.TestSettings memory testSettings =
             PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false});
         SwapParams memory params = SwapParams({
@@ -191,25 +191,25 @@ contract CustomAccountingTest is Test, Deployers {
             sqrtPriceLimitX96: (zeroForOne ? MIN_PRICE_LIMIT : MAX_PRICE_LIMIT)
         });
 
-        // ------------------------ FUZZING CASES ------------------------
-        // with an amount specified of 0: the trade reverts
+        // ------------------------ 模糊测试用例（FUZZING CASES） ------------------------
+        // 指定数量为 0 时：交易回滚（revert）
         if (amountSpecified == 0) {
             vm.expectRevert(IPoolManager.SwapAmountCannotBeZero.selector);
             swapRouter.swap(key, params, testSettings, ZERO_BYTES);
 
-            // trade is exact input of n:, the hook cannot TAKE (+ve hookDeltaSpecified) more than n in input
-            // otherwise the user would have to send more than n in input
+            // 交易为精确输入 n 时：hook 从输入中取走（TAKE，hookDeltaSpecified 为正）的数量不能超过 n
+            // 否则用户将不得不输入超过 n 的数量
         } else if (isExactIn && (hookDeltaSpecified > -amountSpecified)) {
             vm.expectRevert(Hooks.HookDeltaExceedsSwapAmount.selector);
             swapRouter.swap(key, params, testSettings, ZERO_BYTES);
 
-            // exact output of n: the hook cannot GIVE (-ve hookDeltaSpecified) more than n in output
-            // otherwise the user would receive more than n in output
+            // 精确输出 n 时：hook 在输出中给出（GIVE，hookDeltaSpecified 为负）的数量不能超过 n
+            // 否则用户收到的输出将超过 n
         } else if (!isExactIn && (amountSpecified < -hookDeltaSpecified)) {
             vm.expectRevert(Hooks.HookDeltaExceedsSwapAmount.selector);
             swapRouter.swap(key, params, testSettings, ZERO_BYTES);
 
-            // successful swaps !
+            // 兑换成功的情况！
         } else {
             uint256 balanceThisBefore = specifiedCurrency.balanceOf(address(this));
             uint256 balanceHookBefore = specifiedCurrency.balanceOf(hook);
@@ -218,7 +218,7 @@ contract CustomAccountingTest is Test, Deployers {
             BalanceDelta delta = swapRouter.swap(key, params, testSettings, ZERO_BYTES);
             int128 deltaSpecified = (zeroForOne == isExactIn) ? delta.amount0() : delta.amount1();
 
-            // in all cases the hook gets what they took, and the user gets the swap's output delta (checked more below)
+            // 所有情况下 hook 都会得到其取走的数量，用户则得到兑换的输出 delta（下方有更多检查）
             assertEq(
                 balanceHookBefore.toInt256() + hookDeltaSpecified,
                 specifiedCurrency.balanceOf(hook).toInt256(),
@@ -230,30 +230,30 @@ contract CustomAccountingTest is Test, Deployers {
                 "swapper balance change incorrect"
             );
 
-            // exact input, where there arent enough input reserves available to pay swap and hook
-            // note: all 3 values are negative, so we use <
+            // 精确输入，且可用的输入储备不足以同时支付兑换和 hook
+            // 注意：这 3 个值都是负数，所以使用 <
             if (isExactIn && (hookDeltaSpecified + amountSpecified < maxPossibleIn_fuzz_test)) {
-                // the hook will have taken hookDeltaSpecified of the maxPossibleIn
+                // hook 将从 maxPossibleIn 中取走 hookDeltaSpecified
                 assertEq(deltaSpecified, maxPossibleIn_fuzz_test - hookDeltaSpecified, "deltaSpecified exact input");
-                // the manager received all possible input tokens
+                // manager 收到了所有可能的输入代币
                 assertEq(
                     balanceManagerBefore.toInt256() - maxPossibleIn_fuzz_test,
                     specifiedCurrency.balanceOf(address(manager)).toInt256(),
                     "manager balance change exact input"
                 );
 
-                // exact output, where there isn't enough output reserves available to pay swap and hook
+                // 精确输出，且可用的输出储备不足以同时支付兑换和 hook
             } else if (!isExactIn && (hookDeltaSpecified + amountSpecified > maxPossibleOut_fuzz_test)) {
-                // the hook will have taken hookDeltaSpecified of the maxPossibleOut
+                // hook 将从 maxPossibleOut 中取走 hookDeltaSpecified
                 assertEq(deltaSpecified, maxPossibleOut_fuzz_test - hookDeltaSpecified, "deltaSpecified exact output");
-                // the manager sent out all possible output tokens
+                // manager 送出了所有可能的输出代币
                 assertEq(
                     balanceManagerBefore.toInt256() - maxPossibleOut_fuzz_test,
                     specifiedCurrency.balanceOf(address(manager)).toInt256(),
                     "manager balance change exact output"
                 );
 
-                // enough reserves were available, so the user got what they desired
+                // 可用储备充足，因此用户得到了期望的数量
             } else {
                 assertEq(deltaSpecified, amountSpecified, "deltaSpecified not amountSpecified");
                 assertEq(
@@ -265,7 +265,7 @@ contract CustomAccountingTest is Test, Deployers {
         }
     }
 
-    // ------------------------ MODIFY LIQUIDITY ------------------------
+    // ------------------------ 修改流动性（MODIFY LIQUIDITY） ------------------------
 
     function test_addLiquidity_withFeeTakingHook() public {
         _setUpFeeTakingPool();
@@ -287,7 +287,7 @@ contract CustomAccountingTest is Test, Deployers {
         uint256 managerGain0 = currency0.balanceOf(address(manager)) - managerBalanceBefore0;
         uint256 managerGain1 = currency1.balanceOf(address(manager)) - managerBalanceBefore1;
 
-        // Assert that the hook got 5.43% of the added liquidity
+        // 断言 hook 获得了所添加流动性的 5.43%
         assertEq(hookGain0, managerGain0 * 543 / 10000, "hook amount 0");
         assertEq(hookGain1, managerGain1 * 543 / 10000, "hook amount 1");
         assertEq(thisLoss0 - hookGain0, managerGain0, "manager amount 0");
@@ -314,7 +314,7 @@ contract CustomAccountingTest is Test, Deployers {
         uint256 managerLoss0 = managerBalanceBefore0 - currency0.balanceOf(address(manager));
         uint256 managerLoss1 = managerBalanceBefore1 - currency1.balanceOf(address(manager));
 
-        // Assert that the hook got 5.43% of the withdrawn liquidity
+        // 断言 hook 获得了所移除流动性的 5.43%
         assertEq(hookGain0, managerLoss0 * 543 / 10000, "hook amount 0");
         assertEq(hookGain1, managerLoss1 * 543 / 10000, "hook amount 1");
         assertEq(thisGain0 + hookGain0, managerLoss0, "manager amount 0");
@@ -324,21 +324,21 @@ contract CustomAccountingTest is Test, Deployers {
     function test_fuzz_addLiquidity_withLPFeeTakingHook(uint128 feeRevenue0, uint128 feeRevenue1) public {
         feeRevenue0 = uint128(bound(feeRevenue0, 0, type(uint128).max / 2));
         feeRevenue1 = uint128(bound(feeRevenue1, 0, type(uint128).max / 2));
-        _setUpLPFeeTakingPool(); // creates liquidity as part of setup
+        _setUpLPFeeTakingPool(); // 准备过程中会创建流动性
 
-        // donate to generate fee revenue
+        // 捐赠以产生手续费收入
         donateRouter.donate(key, feeRevenue0, feeRevenue1, ZERO_BYTES);
 
         uint256 hookBalanceBefore0 = currency0.balanceOf(hook);
         uint256 hookBalanceBefore1 = currency1.balanceOf(hook);
 
-        // add liquidity again to trigger the hook, which should take the fee revenue
+        // 再次添加流动性以触发 hook，hook 应当拿走手续费收入
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, ZERO_BYTES);
 
         uint256 hookGain0 = currency0.balanceOf(hook) - hookBalanceBefore0;
         uint256 hookGain1 = currency1.balanceOf(hook) - hookBalanceBefore1;
 
-        // Assert that the hook took ALL of the fee revenue, minus 1 wei of imprecision
+        // 断言 hook 拿走了全部手续费收入，仅有 1 wei 的精度误差
         assertApproxEqAbs(hookGain0, feeRevenue0, 1 wei);
         assertApproxEqAbs(hookGain1, feeRevenue1, 1 wei);
         assertTrue(hookGain0 <= feeRevenue0);
@@ -346,12 +346,12 @@ contract CustomAccountingTest is Test, Deployers {
     }
 
     function test_fuzz_removeLiquidity_withLPFeeTakingHook(uint128 feeRevenue0, uint128 feeRevenue1) public {
-        // test fails when fee revenue approaches int128.max because PoolManager is limited by (principal + fees)
+        // 当手续费收入接近 int128.max 时测试会失败，因为 PoolManager 受（本金 + 手续费）的限制
         feeRevenue0 = uint128(bound(feeRevenue0, 0, type(uint128).max / 3));
         feeRevenue1 = uint128(bound(feeRevenue1, 0, type(uint128).max / 3));
-        _setUpLPFeeTakingPool(); // creates liquidity as part of setup
+        _setUpLPFeeTakingPool(); // 准备过程中会创建流动性
 
-        // donate to generate fee revenue
+        // 捐赠以产生手续费收入
         donateRouter.donate(key, feeRevenue0, feeRevenue1, ZERO_BYTES);
 
         uint256 balanceBefore0 = currency0.balanceOf(address(this));
@@ -361,7 +361,7 @@ contract CustomAccountingTest is Test, Deployers {
         uint256 managerBalanceBefore0 = currency0.balanceOf(address(manager));
         uint256 managerBalanceBefore1 = currency1.balanceOf(address(manager));
 
-        // remove liquidity to trigger the hook, which should take the fee revenue
+        // 移除流动性以触发 hook，hook 应当拿走手续费收入
         modifyLiquidityRouter.modifyLiquidity(key, REMOVE_LIQUIDITY_PARAMS, ZERO_BYTES);
 
         uint256 hookGain0 = currency0.balanceOf(hook) - hookBalanceBefore0;
@@ -371,7 +371,7 @@ contract CustomAccountingTest is Test, Deployers {
         uint256 managerLoss0 = managerBalanceBefore0 - currency0.balanceOf(address(manager));
         uint256 managerLoss1 = managerBalanceBefore1 - currency1.balanceOf(address(manager));
 
-        // Assert that the hook took ALL of the fee revenue, minus 1 wei of imprecision
+        // 断言 hook 拿走了全部手续费收入，仅有 1 wei 的精度误差
         assertApproxEqAbs(hookGain0, feeRevenue0, 1 wei);
         assertApproxEqAbs(hookGain1, feeRevenue1, 1 wei);
         assertTrue(hookGain0 <= feeRevenue0);
