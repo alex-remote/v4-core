@@ -134,7 +134,7 @@ contract FullMathTest is Test {
                 return;
             }
 
-            // recompute x and y via mulDiv of the result of floor(x*y/d), should always be less than original inputs by < d
+            // 用 floor(x*y/d) 的结果经 mulDiv 反算 x 和 y，结果应始终不大于原始输入，且差值 < d
             uint256 x2 = FullMath.mulDiv(z, d, y);
             uint256 y2 = FullMath.mulDiv(z, d, x);
             assertLe(x2, x);
@@ -157,7 +157,7 @@ contract FullMathTest is Test {
 
             vm.assume(!resultOverflows(z, d, y));
             vm.assume(!resultOverflows(z, d, x));
-            // recompute x and y via mulDiv of the result of ceil(x*y/d), should always be greater than original inputs by < d
+            // 用 ceil(x*y/d) 的结果经 mulDiv 反算 x 和 y，结果应始终不小于原始输入，且差值 < d
             uint256 x2 = FullMath.mulDiv(z, d, y);
             uint256 y2 = FullMath.mulDiv(z, d, x);
             assertGe(x2, x);
@@ -183,12 +183,12 @@ contract FullMathTest is Test {
     function resultOverflows(uint256 x, uint256 y, uint256 d) private pure returns (bool) {
         require(d > 0);
 
-        // If x or y is zero, the result will be zero, and there's no overflow
+        // 若 x 或 y 为零，则结果为零，不会溢出
         if (x == 0 || y == 0) {
             return false;
         }
 
-        // If intermediate multiplication doesn't overflow, there's no overflow
+        // 若中间乘法不溢出，则不会溢出
         if (x <= type(uint256).max / y) return false;
 
         uint256 remainder = mulmod(x, y, type(uint256).max);
@@ -202,7 +202,7 @@ contract FullMathTest is Test {
         bool mulDivResultOverflows = d <= big;
         bool mulDivRoundingUpResultOverflows = mulDivResultOverflows;
 
-        // must catch edgecase where mulDiv doesn't overflow but roundingUp does
+        // 必须捕获 mulDiv 不溢出但向上取整版本溢出的边界情况
         if (!mulDivResultOverflows) {
             mulDivRoundingUpResultOverflows = FullMath.mulDiv(x, y, d) == type(uint256).max;
         }

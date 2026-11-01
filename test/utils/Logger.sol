@@ -5,7 +5,7 @@ import {ModifyLiquidityParams} from "../../src/types/PoolOperation.sol";
 
 import "forge-std/console2.sol";
 
-// Useful for printing out the true values in a fuzz. For failing fuzzes, foundry logs the unsanitized params.
+// 用于打印模糊测试中的真实取值。对于失败的模糊测试，foundry 记录的是未经处理（unsanitized）的原始参数。
 contract Logger {
     function logParams(ModifyLiquidityParams memory params) public pure {
         console2.log("ModifyLiquidity.tickLower", params.tickLower);

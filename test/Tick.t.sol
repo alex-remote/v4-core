@@ -543,16 +543,16 @@ contract TickTest is Test {
 
         uint128 maxLiquidityPerTick = Pool.tickSpacingToMaxLiquidityPerTick(tickSpacing);
 
-        // symmetry around 0 tick
+        // 关于 tick 0 对称
         assertEq(maxTick, -minTick);
-        // positive max tick
+        // 最大 tick 为正
         assertGt(maxTick, 0);
-        // divisibility
+        // 可被 tick 间距整除
         assertEq((maxTick - minTick) % tickSpacing, 0);
 
         uint256 numTicks = uint256(int256((maxTick - minTick) / tickSpacing)) + 1;
 
-        // sum of max liquidity on each tick is at most the cap
+        // 所有 tick 上最大流动性之和不超过上限
         assertGe(type(uint128).max, uint256(maxLiquidityPerTick) * numTicks);
     }
 }

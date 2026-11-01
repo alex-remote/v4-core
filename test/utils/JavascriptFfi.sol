@@ -7,7 +7,7 @@ abstract contract JavascriptFfi is CommonBase {
     function runScript(string memory scriptName, string memory args) internal returns (bytes memory result) {
         string[] memory inputs = new string[](8);
 
-        // build ffi command string
+        // 构建 ffi 命令字符串
         inputs[0] = "npm";
         inputs[1] = "--silent";
         inputs[2] = "--prefix";

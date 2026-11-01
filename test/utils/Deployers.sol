@@ -32,7 +32,7 @@ contract Deployers is Test {
     using LPFeeLibrary for uint24;
     using StateLibrary for IPoolManager;
 
-    // Helpful test constants
+    // 实用的测试常量
     bytes constant ZERO_BYTES = Constants.ZERO_BYTES;
     uint160 constant SQRT_PRICE_1_1 = Constants.SQRT_PRICE_1_1;
     uint160 constant SQRT_PRICE_1_2 = Constants.SQRT_PRICE_1_2;
@@ -50,7 +50,7 @@ contract Deployers is Test {
     SwapParams public SWAP_PARAMS =
         SwapParams({zeroForOne: true, amountSpecified: -100, sqrtPriceLimitX96: SQRT_PRICE_1_2});
 
-    // Global variables
+    // 全局变量
     Currency internal currency0;
     Currency internal currency1;
     IPoolManager manager;
@@ -71,7 +71,7 @@ contract Deployers is Test {
     PoolKey uninitializedKey;
     PoolKey uninitializedNativeKey;
 
-    // Update this value when you add a new hook flag.
+    // 新增 hook 标志位时请更新此值。
     uint160 hookPermissionCount = 14;
     uint160 clearAllHookPermissionsMask = ~uint160(0) << (hookPermissionCount);
 
@@ -104,8 +104,8 @@ contract Deployers is Test {
         manager.setProtocolFeeController(feeController);
     }
 
-    // You must have first initialised the routers with deployFreshManagerAndRouters
-    // If you only need the currencies (and not approvals) call deployAndMint2Currencies
+    // 必须先用 deployFreshManagerAndRouters 初始化各路由合约
+    // 如果只需要代币（不需要授权），请调用 deployAndMint2Currencies
     function deployMintAndApprove2Currencies() internal returns (Currency, Currency) {
         Currency _currencyA = deployMintAndApproveCurrency();
         Currency _currencyB = deployMintAndApproveCurrency();
@@ -195,10 +195,10 @@ contract Deployers is Test {
         modifyLiquidityRouter.modifyLiquidity{value: msgValue}(_key, LIQUIDITY_PARAMS, ZERO_BYTES);
     }
 
-    // Deploys the manager, all test routers, and sets up 2 pools: with and without native
+    // 部署 manager 和所有测试路由合约，并创建 2 个池子：分别包含和不包含原生代币
     function initializeManagerRoutersAndPoolsWithLiq(IHooks hooks) internal {
         deployFreshManagerAndRouters();
-        // sets the global currencies and key
+        // 设置全局的代币和 key
         deployMintAndApprove2Currencies();
         (key,) = initPoolAndAddLiquidity(currency0, currency1, hooks, 3000, SQRT_PRICE_1_1);
         nestedActionRouter.executor().setKey(key);
@@ -210,12 +210,12 @@ contract Deployers is Test {
         uninitializedNativeKey.fee = 100;
     }
 
-    /// @notice Helper function for a simple ERC20 swaps that allows for unlimited price impact
+    /// @notice 用于简单 ERC20 兑换（swap）的辅助函数，允许无限制的价格影响
     function swap(PoolKey memory _key, bool zeroForOne, int256 amountSpecified, bytes memory hookData)
         internal
         returns (BalanceDelta)
     {
-        // allow native input for exact-input, guide users to the `swapNativeInput` function
+        // 精确输入时允许原生代币作为输入，其他情况引导用户使用 `swapNativeInput` 函数
         bool isNativeInput = zeroForOne && _key.currency0.isAddressZero();
         if (isNativeInput) require(0 > amountSpecified, "Use swapNativeInput() for native-token exact-output swaps");
 
@@ -233,8 +233,8 @@ contract Deployers is Test {
         );
     }
 
-    /// @notice Helper function to increase balance of pool manager.
-    /// Uses default LIQUIDITY_PARAMS range.
+    /// @notice 用于增加 pool manager 余额的辅助函数。
+    /// 使用默认的 LIQUIDITY_PARAMS 区间。
     function seedMoreLiquidity(PoolKey memory _key, uint256 amount0, uint256 amount1) internal {
         (uint160 sqrtPriceX96,,,) = manager.getSlot0(_key.toId());
         uint128 liquidityDelta = LiquidityAmounts.getLiquidityForAmounts(
@@ -255,7 +255,7 @@ contract Deployers is Test {
         modifyLiquidityRouter.modifyLiquidity(_key, params, ZERO_BYTES);
     }
 
-    /// @notice Helper function for a simple Native-token swap that allows for unlimited price impact
+    /// @notice 用于简单原生代币兑换（swap）的辅助函数，允许无限制的价格影响
     function swapNativeInput(
         PoolKey memory _key,
         bool zeroForOne,
@@ -278,6 +278,6 @@ contract Deployers is Test {
         );
     }
 
-    // to receive refunds of spare eth from test helpers
+    // 用于接收测试辅助函数退回的多余 eth
     receive() external payable {}
 }

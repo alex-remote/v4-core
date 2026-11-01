@@ -44,7 +44,7 @@ contract SkipCallsTest is Test, Deployers {
             address(uint160(type(uint160).max & clearAllHookPermissionsMask | Hooks.BEFORE_INITIALIZE_FLAG))
         );
 
-        // initializes pool and increments counter
+        // 初始化池子并使计数器加一
         deploy(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 1);
     }
@@ -54,7 +54,7 @@ contract SkipCallsTest is Test, Deployers {
             address(uint160(type(uint160).max & clearAllHookPermissionsMask | Hooks.AFTER_INITIALIZE_FLAG))
         );
 
-        // initializes pool and increments counter
+        // 初始化池子并使计数器加一
         deploy(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 1);
     }
@@ -67,10 +67,10 @@ contract SkipCallsTest is Test, Deployers {
         deploy(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // adds liquidity and increments counter
+        // 添加流动性并使计数器加一
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 1);
-        // adds liquidity again and increments counter
+        // 再次添加流动性并使计数器加一
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 2);
     }
@@ -83,10 +83,10 @@ contract SkipCallsTest is Test, Deployers {
         deploy(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // adds liquidity and increments counter
+        // 添加流动性并使计数器加一
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 1);
-        // adds liquidity and increments counter again
+        // 添加流动性并再次使计数器加一
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 2);
     }
@@ -100,12 +100,12 @@ contract SkipCallsTest is Test, Deployers {
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // removes liquidity and increments counter
+        // 移除流动性并使计数器加一
         modifyLiquidityRouter.modifyLiquidity(key, REMOVE_LIQUIDITY_PARAMS, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 1);
-        // adds liquidity again
+        // 再次添加流动性
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, abi.encode(address(this)));
-        // removes liquidity again and increments counter
+        // 再次移除流动性并使计数器加一
         modifyLiquidityRouter.modifyLiquidity(key, REMOVE_LIQUIDITY_PARAMS, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 2);
     }
@@ -119,12 +119,12 @@ contract SkipCallsTest is Test, Deployers {
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // removes liquidity and increments counter
+        // 移除流动性并使计数器加一
         modifyLiquidityRouter.modifyLiquidity(key, REMOVE_LIQUIDITY_PARAMS, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 1);
-        // adds liquidity again
+        // 再次添加流动性
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, abi.encode(address(this)));
-        // removes liquidity again and increments counter
+        // 再次移除流动性并使计数器加一
         modifyLiquidityRouter.modifyLiquidity(key, REMOVE_LIQUIDITY_PARAMS, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 2);
     }
@@ -138,10 +138,10 @@ contract SkipCallsTest is Test, Deployers {
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // swaps and increments counter
+        // 执行兑换（swap）并使计数器加一
         swapRouter.swap(key, SWAP_PARAMS, testSettings, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 1);
-        // swaps again and increments counter
+        // 再次执行兑换（swap）并使计数器加一
         swapRouter.swap(key, SWAP_PARAMS, testSettings, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 2);
     }
@@ -155,7 +155,7 @@ contract SkipCallsTest is Test, Deployers {
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // swaps and increments counter
+        // 执行兑换（swap）并使计数器加一
         swapRouter.swap(key, SWAP_PARAMS, testSettings, abi.encode(address(this)));
         vm.snapshotGasLastCall("swap skips hook call if hook is caller");
         assertEq(skipCallsTestHook.counter(), 1);
@@ -169,10 +169,10 @@ contract SkipCallsTest is Test, Deployers {
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // swaps and increments counter
+        // 执行兑换（swap）并使计数器加一
         swapRouter.swap(key, SWAP_PARAMS, testSettings, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 1);
-        // swaps again and increments counter
+        // 再次执行兑换（swap）并使计数器加一
         swapRouter.swap(key, SWAP_PARAMS, testSettings, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 2);
     }
@@ -186,10 +186,10 @@ contract SkipCallsTest is Test, Deployers {
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // donates and increments counter
+        // 执行捐赠并使计数器加一
         donateRouter.donate(key, 100, 200, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 1);
-        // donates again and increments counter
+        // 再次执行捐赠并使计数器加一
         donateRouter.donate(key, 100, 200, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 2);
     }
@@ -203,10 +203,10 @@ contract SkipCallsTest is Test, Deployers {
         approveAndAddLiquidity(skipCallsTestHook);
         assertEq(skipCallsTestHook.counter(), 0);
 
-        // donates and increments counter
+        // 执行捐赠并使计数器加一
         donateRouter.donate(key, 100, 200, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 1);
-        // donates again and increments counter
+        // 再次执行捐赠并使计数器加一
         donateRouter.donate(key, 100, 200, abi.encode(address(this)));
         assertEq(skipCallsTestHook.counter(), 2);
     }

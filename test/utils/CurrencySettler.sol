@@ -5,20 +5,20 @@ import {Currency} from "../../src/types/Currency.sol";
 import {IERC20Minimal} from "../../src/interfaces/external/IERC20Minimal.sol";
 import {IPoolManager} from "../../src/interfaces/IPoolManager.sol";
 
-/// @notice Library used to interact with PoolManager.sol to settle any open deltas.
-/// To settle a positive delta (a credit to the user), a user may take or mint.
-/// To settle a negative delta (a debt on the user), a user make transfer or burn to pay off a debt.
-/// @dev Note that sync() is called before any erc-20 transfer in `settle`.
+/// @notice 用于与 PoolManager.sol 交互、结算任何未结清 delta 的库。
+/// 要结算正的 delta（用户的应收款），用户可以提取（take）或铸造（mint）。
+/// 要结算负的 delta（用户的欠款），用户可以通过转账或销毁（burn）来偿还债务。
+/// @dev 注意，在 `settle` 中进行任何 erc-20 转账之前都会先调用 sync()。
 library CurrencySettler {
-    /// @notice Settle (pay) a currency to the PoolManager
-    /// @param currency Currency to settle
-    /// @param manager IPoolManager to settle to
-    /// @param payer Address of the payer, the token sender
-    /// @param amount Amount to send
-    /// @param burn If true, burn the ERC-6909 token, otherwise ERC20-transfer to the PoolManager
+    /// @notice 向 PoolManager 结算（支付）一种代币
+    /// @param currency 要结算的代币
+    /// @param manager 结算的目标 IPoolManager
+    /// @param payer 付款方地址，即代币发送方
+    /// @param amount 要发送的数量
+    /// @param burn 若为 true，则销毁 ERC-6909 代币，否则通过 ERC20 转账转给 PoolManager
     function settle(Currency currency, IPoolManager manager, address payer, uint256 amount, bool burn) internal {
-        // for native currencies or burns, calling sync is not required
-        // short circuit for ERC-6909 burns to support ERC-6909-wrapped native tokens
+        // 对于原生代币或销毁操作，无需调用 sync
+        // 对 ERC-6909 销毁直接短路处理，以支持 ERC-6909 封装的原生代币
         if (burn) {
             manager.burn(payer, currency.toId(), amount);
         } else if (currency.isAddressZero()) {
@@ -34,12 +34,12 @@ library CurrencySettler {
         }
     }
 
-    /// @notice Take (receive) a currency from the PoolManager
-    /// @param currency Currency to take
-    /// @param manager IPoolManager to take from
-    /// @param recipient Address of the recipient, the token receiver
-    /// @param amount Amount to receive
-    /// @param claims If true, mint the ERC-6909 token, otherwise ERC20-transfer from the PoolManager to recipient
+    /// @notice 从 PoolManager 提取（接收）一种代币
+    /// @param currency 要提取的代币
+    /// @param manager 提取来源的 IPoolManager
+    /// @param recipient 接收方地址，即代币接收者
+    /// @param amount 要接收的数量
+    /// @param claims 若为 true，则铸造 ERC-6909 代币，否则通过 ERC20 转账从 PoolManager 转给接收方
     function take(Currency currency, IPoolManager manager, address recipient, uint256 amount, bool claims) internal {
         claims ? manager.mint(recipient, currency.toId(), amount) : manager.take(currency, recipient, amount);
     }

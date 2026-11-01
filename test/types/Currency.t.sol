@@ -120,9 +120,9 @@ contract TestCurrency is Test {
     }
 
     function test_transfer_noReturnData() public {
-        // This contract reverts with no data
+        // 该合约回滚（revert）时不带任何数据
         EmptyRevertContract emptyRevertingToken = new EmptyRevertContract();
-        // the token reverts with no data, so our custom error will be emitted instead
+        // 该代币回滚时不带数据，因此会改为抛出我们的自定义错误
         vm.expectRevert(
             abi.encodeWithSelector(
                 CustomRevert.WrappedError.selector,
@@ -168,7 +168,7 @@ contract TestCurrency is Test {
                 MockERC20(Currency.unwrap(erc20Currency)).balanceOf(address(currencyTest)), initialERC20Balance - amount
             );
         } else {
-            // the token reverts with an overflow error message, so this is bubbled up
+            // 该代币以溢出错误信息回滚，因此该信息会被向上冒泡传递
             vm.expectRevert(
                 abi.encodeWithSelector(
                     CustomRevert.WrappedError.selector,

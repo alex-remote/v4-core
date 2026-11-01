@@ -28,15 +28,15 @@ contract TickMathTestTest is Test, JavascriptFfi {
     }
 
     function test_MIN_TICK_equalsNegativeMAX_TICK() public view {
-        // this invariant is required in the Tick#tickSpacingToMaxLiquidityPerTick formula
+        // Tick#tickSpacingToMaxLiquidityPerTick 公式依赖于此不变量
         int24 minTick = tickMath.MIN_TICK();
         assertEq(minTick, tickMath.MAX_TICK() * -1);
         assertEq(minTick, MIN_TICK);
     }
 
     function test_MAX_TICK_equalsNegativeMIN_TICK() public view {
-        // this invariant is required in the Tick#tickSpacingToMaxLiquidityPerTick formula
-        // this test is redundant with the above MIN_TICK test
+        // Tick#tickSpacingToMaxLiquidityPerTick 公式依赖于此不变量
+        // 此测试与上面的 MIN_TICK 测试重复
         int24 maxTick = tickMath.MAX_TICK();
         assertEq(maxTick, tickMath.MIN_TICK() * -1);
         assertEq(maxTick, MAX_TICK);
@@ -147,13 +147,13 @@ contract TickMathTestTest is Test, JavascriptFfi {
 
         while (true) {
             if (tick > MAX_TICK) break;
-            // test negative and positive tick
+            // 测试负 tick 和正 tick
             for (uint256 i = 0; i < 2; i++) {
                 tick = tick * -1;
-                if (tick != -50) jsParameters = string(abi.encodePacked(jsParameters, ",")); // do not leave comma in front of first number
-                // add tick to javascript parameters to be calculated inside script
+                if (tick != -50) jsParameters = string(abi.encodePacked(jsParameters, ",")); // 不要在第一个数字前留下逗号
+                // 将 tick 加入 javascript 参数，在脚本中进行计算
                 jsParameters = string(abi.encodePacked(jsParameters, vm.toString(int256(tick))));
-                // track solidity result for tick
+                // 记录该 tick 的 solidity 计算结果
                 getSqrtPriceAtTickFuzzResults.push(tickMath.getSqrtPriceAtTick(tick));
             }
             tick = tick * 2;
@@ -169,7 +169,7 @@ contract TickMathTestTest is Test, JavascriptFfi {
                 jsSqrtPrice > solResult ? (jsSqrtPrice, solResult) : (solResult, jsSqrtPrice);
             uint160 resultsDiff = gtResult - ltResult;
 
-            // assert solc/js result is at most off by 1/100th of a bip (aka one pip)
+            // 断言 solc/js 结果的偏差至多为 1/100 bip（即一个 pip）
             assertEq(resultsDiff * ONE_PIP / jsSqrtPrice, 0);
         }
     }
@@ -180,10 +180,10 @@ contract TickMathTestTest is Test, JavascriptFfi {
         uint160 sqrtPrice = MIN_SQRT_PRICE;
         unchecked {
             while (sqrtPrice < sqrtPrice * 16) {
-                if (sqrtPrice != MIN_SQRT_PRICE) jsParameters = string(abi.encodePacked(jsParameters, ",")); // do not leave comma in front of first number
-                // add tick to javascript parameters to be calculated inside script
+                if (sqrtPrice != MIN_SQRT_PRICE) jsParameters = string(abi.encodePacked(jsParameters, ",")); // 不要在第一个数字前留下逗号
+                // 将 tick 加入 javascript 参数，在脚本中进行计算
                 jsParameters = string(abi.encodePacked(jsParameters, vm.toString(sqrtPrice)));
-                // track solidity result for sqrtPrice
+                // 记录该 sqrtPrice 的 solidity 计算结果
                 getTickAtSqrtPriceFuzzResults.push(tickMath.getTickAtSqrtPrice(sqrtPrice));
                 sqrtPrice = sqrtPrice * 16;
             }
@@ -208,21 +208,21 @@ contract TickMathTestTest is Test, JavascriptFfi {
         uint160 priceAtTick = TickMath.getSqrtPriceAtTick(tick);
         uint160 priceAtNextTick = TickMath.getSqrtPriceAtTick(nextTick);
 
-        // check lowest price of tick
+        // 检查该 tick 的最低价格
         assertEq(TickMath.getTickAtSqrtPrice(priceAtTick), tick, "lower price");
-        // check mid price of tick
+        // 检查该 tick 的中间价格
         assertEq(
             TickMath.getTickAtSqrtPrice(uint160((uint256(priceAtTick) + uint256(priceAtNextTick)) / 2)),
             tick,
             "mid price"
         );
-        // check upper price of tick
+        // 检查该 tick 的上界价格
         assertEq(TickMath.getTickAtSqrtPrice(priceAtNextTick - 1), tick, "upper price");
-        // check lower price of next tick
+        // 检查下一个 tick 的下界价格
         assertEq(TickMath.getTickAtSqrtPrice(priceAtNextTick), nextTick, "lower price next tick");
     }
 
-    /// @notice Benchmark the gas cost of `getSqrtPriceAtTick`
+    /// @notice 基准测试 `getSqrtPriceAtTick` 的 gas 开销
     function test_getSqrtPriceAtTick_gasCost() public {
         vm.startSnapshotGas("TickMathGetSqrtPriceAtTick");
         unchecked {
@@ -233,7 +233,7 @@ contract TickMathTestTest is Test, JavascriptFfi {
         vm.stopSnapshotGas();
     }
 
-    /// @notice Benchmark the gas cost of `getTickAtSqrtPrice`
+    /// @notice 基准测试 `getTickAtSqrtPrice` 的 gas 开销
     function test_getTickAtSqrtPrice_gasCost() public {
         vm.startSnapshotGas("TickMathGetTickAtSqrtPrice");
         unchecked {

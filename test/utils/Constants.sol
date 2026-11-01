@@ -2,8 +2,8 @@
 pragma solidity ^0.8.20;
 
 library Constants {
-    /// @dev All sqrtPrice calculations are calculated as
-    /// sqrtPriceX96 = floor(sqrt(A / B) * 2 ** 96) where A and B are the currency reserves
+    /// @dev 所有 sqrtPrice 均按如下方式计算：
+    /// sqrtPriceX96 = floor(sqrt(A / B) * 2 ** 96)，其中 A 和 B 为两种代币的储备
     uint160 public constant SQRT_PRICE_1_1 = 79228162514264337593543950336;
     uint160 public constant SQRT_PRICE_1_2 = 56022770974786139918731938227;
     uint160 public constant SQRT_PRICE_1_4 = 39614081257132168796771975168;

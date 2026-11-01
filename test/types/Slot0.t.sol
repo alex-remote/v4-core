@@ -14,7 +14,7 @@ contract TestSlot0 is Test {
         public
         pure
     {
-        // pack starting from "lowest" field
+        // 从“最低位”字段开始打包
         Slot0 _slot0 = Slot0.wrap(bytes32(0)).setSqrtPriceX96(sqrtPriceX96).setTick(tick).setProtocolFee(protocolFee)
             .setLpFee(lpFee);
 
@@ -23,7 +23,7 @@ contract TestSlot0 is Test {
         assertEq(_slot0.protocolFee(), protocolFee);
         assertEq(_slot0.lpFee(), lpFee);
 
-        // pack starting from "highest" field
+        // 从“最高位”字段开始打包
         _slot0 = Slot0.wrap(bytes32(0)).setLpFee(lpFee).setProtocolFee(protocolFee).setTick(tick).setSqrtPriceX96(
             sqrtPriceX96
         );

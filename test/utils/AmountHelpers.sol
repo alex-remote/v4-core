@@ -9,8 +9,8 @@ import {TickMath} from "../../src/libraries/TickMath.sol";
 import {PoolKey} from "../../src/types/PoolKey.sol";
 import {StateLibrary} from "../../src/libraries/StateLibrary.sol";
 
-/// @title Calculate token<>liquidity
-/// @notice Helps calculate amounts for bounding fuzz tests
+/// @title 计算 token<>liquidity 之间的换算
+/// @notice 帮助计算用于约束模糊测试输入范围的数量
 library AmountHelpers {
     function getMaxAmountInForPool(IPoolManager manager, ModifyLiquidityParams memory params, PoolKey memory key)
         public

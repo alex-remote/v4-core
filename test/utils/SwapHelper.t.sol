@@ -20,7 +20,7 @@ import {IERC20Minimal} from "../../src/interfaces/external/IERC20Minimal.sol";
 import {BalanceDelta} from "../../src/types/BalanceDelta.sol";
 import {Constants} from "../utils/Constants.sol";
 
-/// @notice Testing Deployers.swap() and Deployers.swapNativeInput()
+/// @notice 测试 Deployers.swap() 和 Deployers.swapNativeInput()
 contract SwapHelperTest is Test, Deployers {
     using Hooks for IHooks;
 
@@ -34,7 +34,7 @@ contract SwapHelperTest is Test, Deployers {
         initializeManagerRoutersAndPoolsWithLiq(mockHooks);
     }
 
-    // --- Deployers.swap() tests --- //
+    // --- Deployers.swap() 测试 --- //
     function test_swap_helper_zeroForOne_exactInput() public {
         int256 amountSpecified = -100;
         BalanceDelta result = swap(key, true, amountSpecified, ZERO_BYTES);
@@ -83,7 +83,7 @@ contract SwapHelperTest is Test, Deployers {
         assertEq(result.amount0(), amountSpecified);
     }
 
-    // --- Deployers.swapNativeInput() tests --- //
+    // --- Deployers.swapNativeInput() 测试 --- //
     function test_swapNativeInput_helper_zeroForOne_exactInput() public {
         int256 amountSpecified = -100;
         BalanceDelta result = swapNativeInput(nativeKey, true, amountSpecified, ZERO_BYTES, 100 wei);
@@ -92,7 +92,7 @@ contract SwapHelperTest is Test, Deployers {
 
     function test_swapNativeInput_helper_zeroForOne_exactOutput() public {
         int256 amountSpecified = 100;
-        BalanceDelta result = swapNativeInput(nativeKey, true, amountSpecified, ZERO_BYTES, 200 wei); // overpay
+        BalanceDelta result = swapNativeInput(nativeKey, true, amountSpecified, ZERO_BYTES, 200 wei); // 多付
         assertEq(result.amount1(), amountSpecified);
     }
 

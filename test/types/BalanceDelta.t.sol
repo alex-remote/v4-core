@@ -60,7 +60,7 @@ contract TestBalanceDelta is Test {
     }
 
     function test_add_revertsOnOverflow() public {
-        // should revert because type(int128).max + 1 is not possible
+        // 应当回滚（revert），因为 type(int128).max + 1 不可能存在
         vm.expectRevert();
         toBalanceDelta(type(int128).max, 0) + toBalanceDelta(1, 0);
 
@@ -72,7 +72,7 @@ contract TestBalanceDelta is Test {
         int256 ac = int256(a) + c;
         int256 bd = int256(b) + d;
 
-        // if the addition overflows it should revert
+        // 如果加法溢出，应当回滚（revert）
         if (ac != int128(ac) || bd != int128(bd)) {
             vm.expectRevert();
         }
@@ -103,7 +103,7 @@ contract TestBalanceDelta is Test {
     }
 
     function test_sub_revertsOnUnderflow() public {
-        // should revert because type(int128).min - 1 is not possible
+        // 应当回滚（revert），因为 type(int128).min - 1 不可能存在
         vm.expectRevert();
         toBalanceDelta(type(int128).min, 0) - toBalanceDelta(1, 0);
 
@@ -115,7 +115,7 @@ contract TestBalanceDelta is Test {
         int256 ac = int256(a) - c;
         int256 bd = int256(b) - d;
 
-        // if the subtraction underflows it should revert
+        // 如果减法下溢，应当回滚（revert）
         if (ac != int128(ac) || bd != int128(bd)) {
             vm.expectRevert();
         }

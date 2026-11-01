@@ -22,7 +22,7 @@ function modifyLiquidity(
   slot0Tick: string,
   slot0Price: string,
 ): string[] {
-  // TODO: Implement fee delta calculations.
+  // TODO: 实现手续费 delta 的计算。
 
   const liquidity = JSBI.BigInt(_liquidity);
 
@@ -30,34 +30,34 @@ function modifyLiquidity(
     return [JSBI_ZERO.toString(), JSBI_ZERO.toString()];
   }
 
-  // State values in slot0.
+  // slot0 中的状态值。
   const tick = JSBI.BigInt(slot0Tick);
   const sqrtPriceX96 = JSBI.BigInt(slot0Price);
 
-  // Position lower and upper ticks.
+  // 头寸的下限 tick 和上限 tick。
   const tickLower = JSBI.BigInt(_tickLower);
   const tickUpper = JSBI.BigInt(_tickUpper);
 
   let delta: string[] = [];
 
   if (JSBI.LT(tick, tickLower)) {
-    // The current tick is less than the lowest tick of the position, so the position is entirely in token0.
+    // 当前 tick 小于头寸的最低 tick，因此头寸完全由 token0 构成。
     let priceLower = JSBI.BigInt(getSqrtPriceAtTick(_tickLower));
     let priceUpper = JSBI.BigInt(getSqrtPriceAtTick(_tickUpper));
     let amount0 = getAmount0Delta(priceLower, priceUpper, liquidity);
     delta.push(amount0.toString());
     delta.push(JSBI_ZERO.toString());
   } else if (JSBI.LT(tick, tickUpper)) {
-    // In-range liquidity. As we are just calculating the values of the delta.
-    // We do not update any global state variable for state.liquidity, but note that the protocol increments state liquidity in this case.
+    // 区间内流动性。由于我们只是在计算 delta 的值，
+    // 所以不会更新 state.liquidity 这一全局状态变量，但注意在这种情况下协议会增加 state 的流动性。
 
     let priceUpper = JSBI.BigInt(getSqrtPriceAtTick(_tickUpper));
     let priceLower = JSBI.BigInt(getSqrtPriceAtTick(_tickLower));
 
-    // When tickLower == the current tick, the price returned from getSqrtPriceATick has a slight error in JS.
-    // In solidity because the calculations for getSqrtRatioAtTick(tickLower) == currentSqrtPriceX96, the
-    // numerator becomes 0, and the amount becomes 0.
-    // So instead of using the price from getSqrtRatioAtTick, we set the priceLower to the current price.
+    // 当 tickLower == 当前 tick 时，JS 中 getSqrtPriceATick 返回的价格存在轻微误差。
+    // 而在 solidity 中，由于 getSqrtRatioAtTick(tickLower) 的计算结果 == currentSqrtPriceX96，
+    // 分子变为 0，金额也随之为 0。
+    // 因此我们不使用 getSqrtRatioAtTick 得到的价格，而是将 priceLower 设为当前价格。
     if (JSBI.EQ(tickLower, tick)) {
       priceLower = sqrtPriceX96;
     }
@@ -68,7 +68,7 @@ function modifyLiquidity(
     delta.push(amount0.toString());
     delta.push(amount1.toString());
   } else {
-    // The current tick is greater than the highest tick of the position, meaning the position is entirely in token1.
+    // 当前 tick 大于头寸的最高 tick，意味着头寸完全由 token1 构成。
     let priceLower = JSBI.BigInt(getSqrtPriceAtTick(_tickLower));
     let priceUpper = JSBI.BigInt(getSqrtPriceAtTick(_tickUpper));
 

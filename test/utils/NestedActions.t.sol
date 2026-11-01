@@ -13,7 +13,7 @@ contract NestedActions is Test, Deployers {
         initializeManagerRoutersAndPoolsWithLiq(IHooks(address(0)));
     }
 
-    // Asserts and expected outcomes are tested inside the nestedActionRouter
+    // 断言和预期结果都在 nestedActionRouter 内部进行测试
 
     function test_nestedSwap() public {
         actions = [Action.SWAP_AND_SETTLE];

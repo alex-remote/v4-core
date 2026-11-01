@@ -17,7 +17,7 @@ contract TickBitmapTest is Test {
     mapping(int16 => uint256) internal emptyBitmap;
 
     function setUp() public {
-        // set dirty slots beforehand for certain gas tests
+        // 预先把存储槽写脏，供某些 gas 测试使用
         int24[10] memory ticks = [SOLO_INITIALIZED_TICK_IN_WORD, -200, -55, -4, INITIALIZED_TICK, 78, 84, 139, 240, 535];
         for (uint256 i; i < ticks.length - 1; i++) {
             flipTick(ticks[i]);
@@ -121,7 +121,7 @@ contract TickBitmapTest is Test {
             bool initialized = isInitialized(tick, tickSpacing);
             bitmap.flipTick(tick, tickSpacing);
             assertEq(isInitialized(tick, tickSpacing), !initialized);
-            // flip again
+            // 再次翻转
             bitmap.flipTick(tick, tickSpacing);
             assertEq(isInitialized(tick, tickSpacing), initialized);
         }
@@ -294,7 +294,7 @@ contract TickBitmapTest is Test {
     }
 
     function test_fuzz_nextInitializedTickWithinOneWord(int24 tick, bool lte) public view {
-        // assume tick is at least one word inside type(int24).(max | min)
+        // 假设 tick 距离 type(int24).(max | min) 至少有一个字（word）的距离
         vm.assume(lte ? tick >= -8388352 : tick < 8388351);
 
         (int24 next, bool initialized) = bitmap.nextInitializedTickWithinOneWord(tick, 1, lte);
@@ -302,7 +302,7 @@ contract TickBitmapTest is Test {
         if (lte) {
             assertLe(next, tick);
             assertLe(tick - next, 256);
-            // all the ticks between the input tick and the next tick should be uninitialized
+            // 输入 tick 与下一个 tick 之间的所有 tick 都应未初始化
             for (int24 i = tick; i > next; i--) {
                 assertTrue(!isInitialized(i));
             }
@@ -310,7 +310,7 @@ contract TickBitmapTest is Test {
         } else {
             assertGt(next, tick);
             assertLe(next - tick, 256);
-            // all the ticks between the input tick and the next tick should be uninitialized
+            // 输入 tick 与下一个 tick 之间的所有 tick 都应未初始化
             for (int24 i = tick + 1; i < next; i++) {
                 assertTrue(!isInitialized(i));
             }
@@ -335,7 +335,7 @@ contract TickBitmapTest is Test {
         } else {
             nextBitPos = uint8(bound(nextBitPos, bitPos, 255));
         }
-        // Choose the next initialized tick within one word at random and flip it.
+        // 在一个字（word）范围内随机选取下一个已初始化的 tick 并将其翻转。
         int24 nextInitializedTick = ((int24(wordPos) << 8) + int24(uint24(nextBitPos))) * tickSpacing;
         emptyBitmap.flipTick(nextInitializedTick, tickSpacing);
         (int24 next, bool initialized) = emptyBitmap.nextInitializedTickWithinOneWord(tick, tickSpacing, lte);

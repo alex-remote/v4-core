@@ -1,74 +1,74 @@
-#format can be "text" or "json" for different output (human or machine readable)
+#format 可以是 "text" 或 "json"，对应不同的输出格式（分别便于人类或机器阅读）
 format: "text"
-#checkAsserts checks assertions
+#checkAsserts 用于检查断言
 checkAsserts: true
-#coverage controls coverage guided testing
+#coverage 控制是否启用覆盖率引导的测试
 coverage: false
-# #psender is the sender for property transactions; by default intentionally
-# #the same as contract deployer
+# #psender 是属性测试交易的发送者；默认有意设置为
+# #与合约部署者相同
 # psender: "0x00a329c0648769a73afac7f9381e08fb43dbea70"
-# #prefix is the prefix for Boolean functions that are properties to be checked
+# #prefix 是待检查属性（返回 Boolean 的函数）的函数名前缀
 # prefix: "echidna_"
-# #propMaxGas defines gas cost at which a property fails
+# #propMaxGas 定义导致属性失败的 gas 消耗阈值
 # propMaxGas: 8000030
-# #testMaxGas is a gas limit; does not cause failure, but terminates sequence
+# #testMaxGas 是 gas 上限；超出时不会判定失败，但会终止当前序列
 # testMaxGas: 8000030
-# #maxGasprice is the maximum gas price
+# #maxGasprice 是最大 gas 价格
 # maxGasprice: 100000000000
-# #testLimit is the number of test sequences to run
+# #testLimit 是要运行的测试序列数量
 # testLimit: 50000
-# #stopOnFail makes echidna terminate as soon as any property fails and has been shrunk
+# #stopOnFail 使 echidna 在任一属性失败且完成收缩（shrink）后立即终止
 # stopOnFail: false
-# #estimateGas makes echidna perform analysis of maximum gas costs for functions (experimental)
+# #estimateGas 使 echidna 分析各函数的最大 gas 消耗（实验性功能）
 # estimateGas: false
-# #seqLen defines how many transactions are in a test sequence
+# #seqLen 定义一个测试序列中包含多少笔交易
 # seqLen: 100
-# #shrinkLimit determines how much effort is spent shrinking failing sequences
+# #shrinkLimit 决定在收缩失败序列上投入多少计算量
 # shrinkLimit: 5000
-# #contractAddr is the address of the contract itself
+# #contractAddr 是被测合约自身的地址
 # contractAddr: "0x00a329c0648769a73afac7f9381e08fb43dbea72"
-# #deployer is address of the contract deployer (who often is privileged owner, etc.)
+# #deployer 是合约部署者的地址（部署者通常是拥有特权的所有者等）
 # deployer: "0x00a329c0648769a73afac7f9381e08fb43dbea70"
-# #sender is set of addresses transactions may originate from
+# #sender 是交易可能发起自的地址集合
 # sender: ["0x10000", "0x20000", "0x00a329c0648769a73afac7f9381e08fb43dbea70"]
-# #balanceAddr is default balance for addresses
+# #balanceAddr 是各地址的默认余额
 # balanceAddr: 0xffffffff
-# #balanceContract overrides balanceAddr for the contract address
+# #balanceContract 针对合约地址覆盖 balanceAddr 的设置
 # balanceContract: 0
-# #solcArgs allows special args to solc
+# #solcArgs 用于向 solc 传递特殊参数
 # solcArgs: ""
-# #solcLibs is solc libraries
+# #solcLibs 是 solc 使用的库
 # solcLibs: []
-# #cryticArgs allows special args to crytic
+# #cryticArgs 用于向 crytic 传递特殊参数
 # cryticArgs: []
-# #quiet produces (much) less verbose output
+# #quiet 使输出（大幅）精简
 # quiet: false
-# #initialize the blockchain with some data
+# #initialize 用一些数据初始化区块链
 # initialize: null
-# #whether or not to use the multi-abi mode of testing
+# #是否使用 multi-abi 测试模式
 # multi-abi: false
-# #benchmarkMode enables benchmark mode
+# #benchmarkMode 启用基准测试模式
 # benchmarkMode: false
-# #timeout controls test timeout settings
+# #timeout 控制测试的超时设置
 # timeout: null
-# #seed not defined by default, is the random seed
+# #seed 是随机种子，默认未定义
 # #seed: 0
-# #dictFreq controls how often to use echidna's internal dictionary vs random
-# #values
+# #dictFreq 控制 echidna 使用其内部字典（而非随机
+# #值）的频率
 # dictFreq: 0.40
 # maxTimeDelay: 604800
-# #maximum time between generated txs; default is one week
+# #生成的交易之间的最大时间间隔；默认为一周
 # maxBlockDelay: 60480
-# #maximum number of blocks elapsed between generated txs; default is expected increment in one week
+# #生成的交易之间经过的最大区块数；默认为一周内预期增加的区块数
 # # timeout:
-# #campaign timeout (in seconds)
-# # list of methods to filter
+# #测试活动（campaign）超时时间（单位：秒）
+# # 需要过滤的方法列表
 # filterFunctions: []
-# # by default, blacklist methods in filterFunctions
+# # 默认将 filterFunctions 中的方法列入黑名单
 # filterBlacklist: true
-# #directory to save the corpus; by default is disabled
+# #保存语料库（corpus）的目录；默认禁用
 # corpusDir: null
-# # constants for corpus mutations (for experimentation only)
+# # 语料库变异所用的常量（仅供实验）
 # mutConsts: [100, 1, 1]
-# # maximum value to send to payable functions
+# # 发送给 payable 函数的最大金额
 # maxValue: 100000000000000000000 # 100 eth

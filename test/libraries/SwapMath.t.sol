@@ -118,7 +118,7 @@ contract SwapMathTest is Test {
 
         assertEq(amountIn, 1);
         assertEq(feeAmount, 1);
-        assertEq(amountOut, 1); // would be 2 if not capped
+        assertEq(amountOut, 1); // 若未设上限则会是 2
         assertEq(sqrtQ, 417332158212080721273783715441581);
     }
 
@@ -146,7 +146,7 @@ contract SwapMathTest is Test {
         uint160 sqrtP = 20282409603651670423947251286016;
         uint160 sqrtPTarget = (sqrtP * 11) / 10;
         uint128 liquidity = 1024;
-        // virtual reserves of one are only 4
+        // token1 的虚拟储备只有 4
         // https://www.wolframalpha.com/input/?i=1024+%2F+%2820282409603651670423947251286016+%2F+2**96%29
         int256 amountRemaining = 4;
         uint24 feePips = 3000;
@@ -164,7 +164,7 @@ contract SwapMathTest is Test {
         uint160 sqrtP = 20282409603651670423947251286016;
         uint160 sqrtPTarget = (sqrtP * 9) / 10;
         uint128 liquidity = 1024;
-        // virtual reserves of zero are only 262144
+        // token0 的虚拟储备只有 262144
         // https://www.wolframalpha.com/input/?i=1024+*+%2820282409603651670423947251286016+%2F+2**96%29
         int256 amountRemaining = 263000;
         uint24 feePips = 3000;
@@ -215,7 +215,7 @@ contract SwapMathTest is Test {
             assertEq(sqrtQ, sqrtPriceTargetRaw);
         }
 
-        // didn't reach price target, entire amount must be consumed
+        // 未到达目标价格，必须消耗全部数量
         if (sqrtQ != sqrtPriceTargetRaw) {
             uint256 absAmtRemaining;
             if (amountRemaining == type(int256).min) {
@@ -229,7 +229,7 @@ contract SwapMathTest is Test {
             else assertEq(amountIn + feeAmount, absAmtRemaining);
         }
 
-        // next price is between price and price target
+        // 下一个价格位于当前价格与目标价格之间
         if (sqrtPriceTargetRaw <= sqrtPriceRaw) {
             assertLe(sqrtQ, sqrtPriceRaw);
             assertGe(sqrtQ, sqrtPriceTargetRaw);
