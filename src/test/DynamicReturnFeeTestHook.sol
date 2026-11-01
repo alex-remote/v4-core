@@ -29,7 +29,7 @@ contract DynamicReturnFeeTestHook is BaseTestHooks {
         override
         returns (bytes4, BeforeSwapDelta, uint24)
     {
-        // attach the fee flag to `fee` to enable overriding the pool's stored fee
+        // 在 `fee` 上附加手续费覆盖标志位，以便覆盖池子中已存储的手续费
         return (IHooks.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, fee | LPFeeLibrary.OVERRIDE_FEE_FLAG);
     }
 

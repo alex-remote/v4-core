@@ -4,77 +4,77 @@ pragma solidity ^0.8.0;
 import {BitMath} from "./BitMath.sol";
 import {CustomRevert} from "./CustomRevert.sol";
 
-/// @title Math library for computing sqrt prices from ticks and vice versa
-/// @notice Computes sqrt price for ticks of size 1.0001, i.e. sqrt(1.0001^tick) as fixed point Q64.96 numbers. Supports
-/// prices between 2**-128 and 2**128
+/// @title 用于根据 tick 计算平方根价格及其逆运算的数学库
+/// @notice 计算以 1.0001 为步长的 tick 对应的平方根价格，即 sqrt(1.0001^tick)，结果为 Q64.96 定点数。支持
+/// 介于 2**-128 与 2**128 之间的价格
 library TickMath {
     using CustomRevert for bytes4;
 
-    /// @notice Thrown when the tick passed to #getSqrtPriceAtTick is not between MIN_TICK and MAX_TICK
+    /// @notice 当传给 #getSqrtPriceAtTick 的 tick 不在 MIN_TICK 与 MAX_TICK 之间时抛出
     error InvalidTick(int24 tick);
-    /// @notice Thrown when the price passed to #getTickAtSqrtPrice does not correspond to a price between MIN_TICK and MAX_TICK
+    /// @notice 当传给 #getTickAtSqrtPrice 的价格不对应于 MIN_TICK 与 MAX_TICK 之间的价格时抛出
     error InvalidSqrtPrice(uint160 sqrtPriceX96);
 
-    /// @dev The minimum tick that may be passed to #getSqrtPriceAtTick computed from log base 1.0001 of 2**-128
-    /// @dev If ever MIN_TICK and MAX_TICK are not centered around 0, the absTick logic in getSqrtPriceAtTick cannot be used
+    /// @dev 可传给 #getSqrtPriceAtTick 的最小 tick，由以 1.0001 为底 2**-128 的对数计算得出
+    /// @dev 如果 MIN_TICK 与 MAX_TICK 不再以 0 为中心对称，则 getSqrtPriceAtTick 中的 absTick 逻辑将不能使用
     int24 internal constant MIN_TICK = -887272;
-    /// @dev The maximum tick that may be passed to #getSqrtPriceAtTick computed from log base 1.0001 of 2**128
-    /// @dev If ever MIN_TICK and MAX_TICK are not centered around 0, the absTick logic in getSqrtPriceAtTick cannot be used
+    /// @dev 可传给 #getSqrtPriceAtTick 的最大 tick，由以 1.0001 为底 2**128 的对数计算得出
+    /// @dev 如果 MIN_TICK 与 MAX_TICK 不再以 0 为中心对称，则 getSqrtPriceAtTick 中的 absTick 逻辑将不能使用
     int24 internal constant MAX_TICK = 887272;
 
-    /// @dev The minimum tick spacing value drawn from the range of type int16 that is greater than 0, i.e. min from the range [1, 32767]
+    /// @dev 从 int16 类型取值范围中选取的大于 0 的最小 tick 间距值，即区间 [1, 32767] 中的最小值
     int24 internal constant MIN_TICK_SPACING = 1;
-    /// @dev The maximum tick spacing value drawn from the range of type int16, i.e. max from the range [1, 32767]
+    /// @dev 从 int16 类型取值范围中选取的最大 tick 间距值，即区间 [1, 32767] 中的最大值
     int24 internal constant MAX_TICK_SPACING = type(int16).max;
 
-    /// @dev The minimum value that can be returned from #getSqrtPriceAtTick. Equivalent to getSqrtPriceAtTick(MIN_TICK)
+    /// @dev #getSqrtPriceAtTick 可返回的最小值，等同于 getSqrtPriceAtTick(MIN_TICK)
     uint160 internal constant MIN_SQRT_PRICE = 4295128739;
-    /// @dev The maximum value that can be returned from #getSqrtPriceAtTick. Equivalent to getSqrtPriceAtTick(MAX_TICK)
+    /// @dev #getSqrtPriceAtTick 可返回的最大值，等同于 getSqrtPriceAtTick(MAX_TICK)
     uint160 internal constant MAX_SQRT_PRICE = 1461446703485210103287273052203988822378723970342;
-    /// @dev A threshold used for optimized bounds check, equals `MAX_SQRT_PRICE - MIN_SQRT_PRICE - 1`
+    /// @dev 用于优化边界检查的阈值，等于 `MAX_SQRT_PRICE - MIN_SQRT_PRICE - 1`
     uint160 internal constant MAX_SQRT_PRICE_MINUS_MIN_SQRT_PRICE_MINUS_ONE =
         1461446703485210103287273052203988822378723970342 - 4295128739 - 1;
 
-    /// @notice Given a tickSpacing, compute the maximum usable tick
+    /// @notice 给定 tickSpacing，计算可用的最大 tick
     function maxUsableTick(int24 tickSpacing) internal pure returns (int24) {
         unchecked {
             return (MAX_TICK / tickSpacing) * tickSpacing;
         }
     }
 
-    /// @notice Given a tickSpacing, compute the minimum usable tick
+    /// @notice 给定 tickSpacing，计算可用的最小 tick
     function minUsableTick(int24 tickSpacing) internal pure returns (int24) {
         unchecked {
             return (MIN_TICK / tickSpacing) * tickSpacing;
         }
     }
 
-    /// @notice Calculates sqrt(1.0001^tick) * 2^96
-    /// @dev Throws if |tick| > max tick
-    /// @param tick The input tick for the above formula
-    /// @return sqrtPriceX96 A Fixed point Q64.96 number representing the sqrt of the price of the two assets (currency1/currency0)
-    /// at the given tick
+    /// @notice 计算 sqrt(1.0001^tick) * 2^96
+    /// @dev 若 |tick| > 最大 tick 则抛出异常
+    /// @param tick 上述公式的输入 tick
+    /// @return sqrtPriceX96 一个 Q64.96 定点数，表示两种资产价格（currency1/currency0）的平方根
+    /// （在给定 tick 处）
     function getSqrtPriceAtTick(int24 tick) internal pure returns (uint160 sqrtPriceX96) {
         unchecked {
             uint256 absTick;
             assembly ("memory-safe") {
                 tick := signextend(2, tick)
-                // mask = 0 if tick >= 0 else -1 (all 1s)
+                // 若 tick >= 0 则 mask = 0，否则 mask = -1（所有位均为 1）
                 let mask := sar(255, tick)
-                // if tick >= 0, |tick| = tick = 0 ^ tick
-                // if tick < 0, |tick| = ~~|tick| = ~(-|tick| - 1) = ~(tick - 1) = (-1) ^ (tick - 1)
-                // either way, |tick| = mask ^ (tick + mask)
+                // 若 tick >= 0，|tick| = tick = 0 ^ tick
+                // 若 tick < 0，|tick| = ~~|tick| = ~(-|tick| - 1) = ~(tick - 1) = (-1) ^ (tick - 1)
+                // 无论哪种情况，|tick| = mask ^ (tick + mask)
                 absTick := xor(mask, add(mask, tick))
             }
 
             if (absTick > uint256(int256(MAX_TICK))) InvalidTick.selector.revertWith(tick);
 
-            // The tick is decomposed into bits, and for each bit with index i that is set, the product of 1/sqrt(1.0001^(2^i))
-            // is calculated (using Q128.128). The constants used for this calculation are rounded to the nearest integer
+            // 将 tick 按位分解，对于每个被置位的第 i 位，计算 1/sqrt(1.0001^(2^i)) 的乘积
+            // （使用 Q128.128 表示）。此计算所用的常量均已四舍五入到最接近的整数
 
-            // Equivalent to:
+            // 等价于：
             //     price = absTick & 0x1 != 0 ? 0xfffcb933bd6fad37aa2d162d1a594001 : 0x100000000000000000000000000000000;
-            //     or price = int(2**128 / sqrt(1.0001)) if (absTick & 0x1) else 1 << 128
+            //     或 price = int(2**128 / sqrt(1.0001)) if (absTick & 0x1) else 1 << 128
             uint256 price;
             assembly ("memory-safe") {
                 price := xor(shl(128, 1), mul(xor(shl(128, 1), 0xfffcb933bd6fad37aa2d162d1a594001), and(absTick, 0x1)))
@@ -103,27 +103,27 @@ library TickMath {
                 // if (tick > 0) price = type(uint256).max / price;
                 if sgt(tick, 0) { price := div(not(0), price) }
 
-                // this divides by 1<<32 rounding up to go from a Q128.128 to a Q128.96.
-                // we then downcast because we know the result always fits within 160 bits due to our tick input constraint
-                // we round up in the division so getTickAtSqrtPrice of the output price is always consistent
-                // `sub(shl(32, 1), 1)` is `type(uint32).max`
-                // `price + type(uint32).max` will not overflow because `price` fits in 192 bits
+                // 除以 1<<32 并向上取整，从而将 Q128.128 转换为 Q128.96。
+                // 随后进行向下类型转换，因为输入 tick 的约束保证了结果总能放入 160 位
+                // 除法中向上取整，以保证对输出价格调用 getTickAtSqrtPrice 的结果始终一致
+                // `sub(shl(32, 1), 1)` 即 `type(uint32).max`
+                // `price + type(uint32).max` 不会溢出，因为 `price` 可放入 192 位
                 sqrtPriceX96 := shr(32, add(price, sub(shl(32, 1), 1)))
             }
         }
     }
 
-    /// @notice Calculates the greatest tick value such that getSqrtPriceAtTick(tick) <= sqrtPriceX96
-    /// @dev Throws in case sqrtPriceX96 < MIN_SQRT_PRICE, as MIN_SQRT_PRICE is the lowest value getSqrtPriceAtTick may
-    /// ever return.
-    /// @param sqrtPriceX96 The sqrt price for which to compute the tick as a Q64.96
-    /// @return tick The greatest tick for which the getSqrtPriceAtTick(tick) is less than or equal to the input sqrtPriceX96
+    /// @notice 计算满足 getSqrtPriceAtTick(tick) <= sqrtPriceX96 的最大 tick 值
+    /// @dev 当 sqrtPriceX96 < MIN_SQRT_PRICE 时抛出异常，因为 MIN_SQRT_PRICE 是 getSqrtPriceAtTick
+    /// 可能返回的最小值。
+    /// @param sqrtPriceX96 用于计算 tick 的平方根价格，格式为 Q64.96
+    /// @return tick 满足 getSqrtPriceAtTick(tick) 小于或等于输入 sqrtPriceX96 的最大 tick
     function getTickAtSqrtPrice(uint160 sqrtPriceX96) internal pure returns (int24 tick) {
         unchecked {
-            // Equivalent: if (sqrtPriceX96 < MIN_SQRT_PRICE || sqrtPriceX96 >= MAX_SQRT_PRICE) revert InvalidSqrtPrice();
-            // second inequality must be >= because the price can never reach the price at the max tick
-            // if sqrtPriceX96 < MIN_SQRT_PRICE, the `sub` underflows and `gt` is true
-            // if sqrtPriceX96 >= MAX_SQRT_PRICE, sqrtPriceX96 - MIN_SQRT_PRICE > MAX_SQRT_PRICE - MIN_SQRT_PRICE - 1
+            // 等价于：if (sqrtPriceX96 < MIN_SQRT_PRICE || sqrtPriceX96 >= MAX_SQRT_PRICE) revert InvalidSqrtPrice();
+            // 第二个不等式必须用 >=，因为价格永远无法达到最大 tick 处的价格
+            // 若 sqrtPriceX96 < MIN_SQRT_PRICE，`sub` 会下溢，`gt` 结果为 true
+            // 若 sqrtPriceX96 >= MAX_SQRT_PRICE，则 sqrtPriceX96 - MIN_SQRT_PRICE > MAX_SQRT_PRICE - MIN_SQRT_PRICE - 1
             if ((sqrtPriceX96 - MIN_SQRT_PRICE) > MAX_SQRT_PRICE_MINUS_MIN_SQRT_PRICE_MINUS_ONE) {
                 InvalidSqrtPrice.selector.revertWith(sqrtPriceX96);
             }
@@ -222,14 +222,14 @@ library TickMath {
                 log_2 := or(log_2, shl(50, f))
             }
 
-            int256 log_sqrt10001 = log_2 * 255738958999603826347141; // Q22.128 number
+            int256 log_sqrt10001 = log_2 * 255738958999603826347141; // Q22.128 格式的数
 
-            // Magic number represents the ceiling of the maximum value of the error when approximating log_sqrt10001(x)
+            // 该魔数表示近似计算 log_sqrt10001(x) 时误差最大值的上取整
             int24 tickLow = int24((log_sqrt10001 - 3402992956809132418596140100660247210) >> 128);
 
-            // Magic number represents the minimum value of the error when approximating log_sqrt10001(x), when
-            // sqrtPrice is from the range (2^-64, 2^64). This is safe as MIN_SQRT_PRICE is more than 2^-64. If MIN_SQRT_PRICE
-            // is changed, this may need to be changed too
+            // 该魔数表示近似计算 log_sqrt10001(x) 时误差的最小值，前提是
+            // sqrtPrice 位于区间 (2^-64, 2^64) 内。由于 MIN_SQRT_PRICE 大于 2^-64，这是安全的。如果 MIN_SQRT_PRICE
+            // 发生变化，此值可能也需要相应修改
             int24 tickHi = int24((log_sqrt10001 + 291339464771989622907027621153398088495) >> 128);
 
             tick = tickLow == tickHi ? tickLow : getSqrtPriceAtTick(tickHi) <= sqrtPriceX96 ? tickHi : tickLow;

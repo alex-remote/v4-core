@@ -30,7 +30,7 @@ abstract contract V3Fuzzer is V3Helper, Deployers, Fuzzers, IUniswapV3MintCallba
     {
         fee = uint24(bound(fee, 0, 999999));
         tickSpacing = int24(bound(tickSpacing, 1, 16383));
-        // v3 pools don't allow overwriting existing fees, 500, 3000, 10000 are set by default in the constructor
+        // v3 池子不允许覆盖已有的手续费档位，500、3000、10000 已在构造函数中默认设置
         if (fee == 500) tickSpacing = 10;
         else if (fee == 3000) tickSpacing = 60;
         else if (fee == 10000) tickSpacing = 200;
@@ -82,16 +82,16 @@ abstract contract V3Fuzzer is V3Helper, Deployers, Fuzzers, IUniswapV3MintCallba
     {
         if (amountSpecified == 0) amountSpecified = 1;
         if (amountSpecified == type(int128).min) amountSpecified = type(int128).min + 1;
-        // v3 swap
+        // v3 兑换（swap）
         (int256 amount0Delta, int256 amount1Delta) = pool.swap(
-            // invert amountSpecified because v3 swaps use inverted signs
+            // 对 amountSpecified 取反，因为 v3 兑换使用相反的符号约定
             address(this),
             zeroForOne,
             amountSpecified * -1,
             zeroForOne ? MIN_PRICE_LIMIT : MAX_PRICE_LIMIT,
             ""
         );
-        // v3 can handle bigger numbers than v4, so if we exceed int128, check that the next call reverts
+        // v3 能处理比 v4 更大的数值，因此若超出 int128 范围，需检查下一次调用会回滚（revert）
         bool overflows = false;
         if (
             amount0Delta > type(int128).max || amount1Delta > type(int128).max || amount0Delta < type(int128).min
@@ -99,7 +99,7 @@ abstract contract V3Fuzzer is V3Helper, Deployers, Fuzzers, IUniswapV3MintCallba
         ) {
             overflows = true;
         }
-        // v4 swap
+        // v4 兑换（swap）
         SwapParams memory swapParams = SwapParams({
             zeroForOne: zeroForOne,
             amountSpecified: amountSpecified,
@@ -119,7 +119,7 @@ abstract contract V3Fuzzer is V3Helper, Deployers, Fuzzers, IUniswapV3MintCallba
             amount1Delta = 0;
         }
 
-        // because signs for v3 and v4 swaps are inverted, add values up to get the difference
+        // 由于 v3 与 v4 兑换的符号相反，将两者相加即可得到差值
         amount0Diff = amount0Delta + delta.amount0();
         amount1Diff = amount1Delta + delta.amount1();
     }

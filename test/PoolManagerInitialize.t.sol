@@ -52,10 +52,10 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_fuzz_initialize(PoolKey memory key0, uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
-        // tested in Hooks.t.sol
+        // 已在 Hooks.t.sol 中测试
         key0.hooks = IHooks(Constants.ADDRESS_ZERO);
 
         if (key0.tickSpacing > TickMath.MAX_TICK_SPACING) {
@@ -92,7 +92,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_forNativeTokens(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
         uninitializedKey.currency0 = CurrencyLibrary.ADDRESS_ZERO;
 
@@ -119,7 +119,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_succeedsWithHooks(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
         address payable mockAddr = payable(address(uint160(Hooks.BEFORE_INITIALIZE_FLAG | Hooks.AFTER_INITIALIZE_FLAG)));
@@ -150,7 +150,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_succeedsWithMaxTickSpacing(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
         uninitializedKey.tickSpacing = TickMath.MAX_TICK_SPACING;
@@ -173,7 +173,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_succeedsWithEmptyHooks(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
         address allHooksAddr = Constants.ALL_HOOKS;
@@ -190,10 +190,10 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_revertsWithIdenticalTokens(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
-        // Both currencies are currency0
+        // 两个代币都是 currency0
         uninitializedKey.currency1 = currency0;
 
         vm.expectRevert(
@@ -207,7 +207,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_revertsWithSameTokenCombo(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
         uninitializedKey.currency1 = currency0;
@@ -224,7 +224,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_revertsWhenPoolAlreadyInitialized(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
         manager.initialize(uninitializedKey, sqrtPriceX96);
@@ -244,11 +244,11 @@ contract PoolManagerInitializeTest is Test, Deployers {
         mockHooks.setReturnValue(mockHooks.beforeInitialize.selector, bytes4(0xdeadbeef));
         mockHooks.setReturnValue(mockHooks.afterInitialize.selector, bytes4(0xdeadbeef));
 
-        // Fails at beforeInitialize hook.
+        // 在 beforeInitialize hook 处失败。
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         manager.initialize(uninitializedKey, SQRT_PRICE_1_1);
 
-        // Fail at afterInitialize hook.
+        // 在 afterInitialize hook 处失败。
         mockHooks.setReturnValue(mockHooks.beforeInitialize.selector, mockHooks.beforeInitialize.selector);
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         manager.initialize(uninitializedKey, SQRT_PRICE_1_1);
@@ -284,7 +284,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_failsIfTickSpaceTooLarge(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
         uninitializedKey.tickSpacing = TickMath.MAX_TICK_SPACING + 1;
@@ -294,7 +294,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_failsIfTickSpaceZero(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
         uninitializedKey.tickSpacing = 0;
@@ -304,7 +304,7 @@ contract PoolManagerInitializeTest is Test, Deployers {
     }
 
     function test_initialize_failsIfTickSpaceNeg(uint160 sqrtPriceX96) public {
-        // Assumptions tested in Pool.t.sol
+        // 相关前提假设已在 Pool.t.sol 中测试
         sqrtPriceX96 = uint160(bound(sqrtPriceX96, TickMath.MIN_SQRT_PRICE, TickMath.MAX_SQRT_PRICE - 1));
 
         uninitializedKey.tickSpacing = -1;

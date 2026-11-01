@@ -42,7 +42,7 @@ contract ProtocolFeesTest is Test, Deployers {
     function test_setProtocolFeeController_revertsWithNotAuthorized() public {
         assertEq(protocolFees.protocolFeeController(), address(0));
 
-        vm.prank(address(1)); // not the owner address
+        vm.prank(address(1)); // 不是所有者地址
         vm.expectRevert("UNAUTHORIZED");
         protocolFees.setProtocolFeeController(feeController);
         assertEq(protocolFees.protocolFeeController(), address(0));
@@ -51,7 +51,7 @@ contract ProtocolFeesTest is Test, Deployers {
     function test_setProtocolFee_succeeds_gas() public {
         PoolKey memory key = PoolKey(currency0, currency1, 3000, 60, IHooks(address(0)));
         protocolFees.setProtocolFeeController(feeController);
-        // Set price to pretend that the pool is initialized
+        // 设置价格，假装池子已初始化
         protocolFees.setPrice(key, Constants.SQRT_PRICE_1_1);
         vm.prank(feeController);
         vm.expectEmit(true, false, false, true, address(protocolFees));
@@ -82,7 +82,7 @@ contract ProtocolFeesTest is Test, Deployers {
 
     function test_fuzz_setProtocolFee(PoolKey memory key, uint24 protocolFee) public {
         protocolFees.setProtocolFeeController(feeController);
-        // Set price to pretend that the pool is initialized
+        // 设置价格，假装池子已初始化
         protocolFees.setPrice(key, Constants.SQRT_PRICE_1_1);
         uint16 fee0 = protocolFee.getZeroForOneFee();
         uint16 fee1 = protocolFee.getOneForZeroFee();
@@ -103,7 +103,7 @@ contract ProtocolFeesTest is Test, Deployers {
     }
 
     function test_collectProtocolFees_succeeds() public {
-        // set a balance of protocol fees that can be collected
+        // 设置一笔可供收取的协议手续费余额
         protocolFees.updateProtocolFees(currency0, 100);
         assertEq(protocolFees.protocolFeesAccrued(currency0), 100);
 
@@ -120,7 +120,7 @@ contract ProtocolFeesTest is Test, Deployers {
         uint256 recipientBalanceBefore = currency0.balanceOf(recipient);
         uint256 senderBalanceBefore = currency0.balanceOf(address(protocolFees));
 
-        // set a balance of protocol fees that can be collected
+        // 设置一笔可供收取的协议手续费余额
         protocolFees.updateProtocolFees(currency0, feesAccrued);
         assertEq(protocolFees.protocolFeesAccrued(currency0), feesAccrued);
         if (amount == 0) {
@@ -147,7 +147,7 @@ contract ProtocolFeesTest is Test, Deployers {
     }
 
     function test_updateProtocolFees_succeeds() public {
-        // set a starting balance of protocol fees
+        // 设置协议手续费的初始余额
         protocolFees.updateProtocolFees(currency0, 100);
         assertEq(protocolFees.protocolFeesAccrued(currency0), 100);
 
@@ -156,7 +156,7 @@ contract ProtocolFeesTest is Test, Deployers {
     }
 
     function test_fuzz_updateProtocolFees(uint256 amount, uint256 startingAmount) public {
-        // set a starting balance of protocol fees
+        // 设置协议手续费的初始余额
         protocolFees.updateProtocolFees(currency0, startingAmount);
         assertEq(protocolFees.protocolFeesAccrued(currency0), startingAmount);
 

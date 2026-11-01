@@ -76,7 +76,7 @@ import {CustomRevert} from "./libraries/CustomRevert.sol";
 //                                                      444
 
 /// @title PoolManager
-/// @notice Holds the state for all pools
+/// @notice 持有所有池子的状态
 contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claims, Extsload, Exttload {
     using SafeCast for *;
     using Pool for *;
@@ -92,7 +92,7 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
 
     mapping(PoolId id => Pool.State) internal _pools;
 
-    /// @notice This will revert if the contract is locked
+    /// @notice 若合约处于锁定状态，则回滚（revert）
     modifier onlyWhenUnlocked() {
         if (!Lock.isUnlocked()) ManagerLocked.selector.revertWith();
         _;
@@ -106,7 +106,7 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
 
         Lock.unlock();
 
-        // the caller does everything in this callback, including paying what they owe via calls to settle
+        // 调用者在此回调中完成所有操作，包括通过调用 settle 支付其所欠的款项
         result = IUnlockCallback(msg.sender).unlockCallback(data);
 
         if (NonzeroDeltaCount.read() != 0) CurrencyNotSettled.selector.revertWith();
@@ -115,7 +115,7 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
 
     /// @inheritdoc IPoolManager
     function initialize(PoolKey memory key, uint160 sqrtPriceX96) external noDelegateCall returns (int24 tick) {
-        // see TickBitmap.sol for overflow conditions that can arise from tick spacing being too large
+        // tick 间距过大可能导致的溢出情况，参见 TickBitmap.sol
         if (key.tickSpacing > MAX_TICK_SPACING) TickSpacingTooLarge.selector.revertWith(key.tickSpacing);
         if (key.tickSpacing < MIN_TICK_SPACING) TickSpacingTooSmall.selector.revertWith(key.tickSpacing);
         if (key.currency0 >= key.currency1) {
@@ -133,9 +133,9 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
 
         tick = _pools[id].initialize(sqrtPriceX96, lpFee);
 
-        // event is emitted before the afterInitialize call to ensure events are always emitted in order
-        // emit all details of a pool key. poolkeys are not saved in storage and must always be provided by the caller
-        // the key's fee may be a static fee or a sentinel to denote a dynamic fee.
+        // 事件在调用 afterInitialize 之前发出，以确保事件始终按顺序发出
+        // 发出池子 key 的全部细节。池子 key 不保存在存储中，必须始终由调用者提供
+        // key 中的 fee 可能是静态手续费，也可能是表示动态手续费的哨兵值。
         emit Initialize(id, key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks, sqrtPriceX96, tick);
 
         key.hooks.afterInitialize(key, sqrtPriceX96, tick);
@@ -167,17 +167,17 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
                 })
             );
 
-            // fee delta and principal delta are both accrued to the caller
+            // 手续费 delta 与本金 delta 都累积给调用者
             callerDelta = principalDelta + feesAccrued;
         }
 
-        // event is emitted before the afterModifyLiquidity call to ensure events are always emitted in order
+        // 事件在调用 afterModifyLiquidity 之前发出，以确保事件始终按顺序发出
         emit ModifyLiquidity(id, msg.sender, params.tickLower, params.tickUpper, params.liquidityDelta, params.salt);
 
         BalanceDelta hookDelta;
         (callerDelta, hookDelta) = key.hooks.afterModifyLiquidity(key, params, callerDelta, feesAccrued, hookData);
 
-        // if the hook doesn't have the flag to be able to return deltas, hookDelta will always be 0
+        // 如果 hook 没有可返回 delta 的标志位，hookDelta 将始终为 0
         if (hookDelta != BalanceDeltaLibrary.ZERO_DELTA) _accountPoolBalanceDelta(key, hookDelta, address(key.hooks));
 
         _accountPoolBalanceDelta(key, callerDelta, msg.sender);
@@ -201,8 +201,8 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
             uint24 lpFeeOverride;
             (amountToSwap, beforeSwapDelta, lpFeeOverride) = key.hooks.beforeSwap(key, params, hookData);
 
-            // execute swap, account protocol fees, and emit swap event
-            // _swap is needed to avoid stack too deep error
+            // 执行兑换（swap）、记账协议手续费，并发出 swap 事件
+            // 需要 _swap 以避免 stack too deep 错误
             swapDelta = _swap(
                 pool,
                 id,
@@ -213,20 +213,20 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
                     sqrtPriceLimitX96: params.sqrtPriceLimitX96,
                     lpFeeOverride: lpFeeOverride
                 }),
-                params.zeroForOne ? key.currency0 : key.currency1 // input token
+                params.zeroForOne ? key.currency0 : key.currency1 // 输入代币
             );
         }
 
         BalanceDelta hookDelta;
         (swapDelta, hookDelta) = key.hooks.afterSwap(key, params, swapDelta, hookData, beforeSwapDelta);
 
-        // if the hook doesn't have the flag to be able to return deltas, hookDelta will always be 0
+        // 如果 hook 没有可返回 delta 的标志位，hookDelta 将始终为 0
         if (hookDelta != BalanceDeltaLibrary.ZERO_DELTA) _accountPoolBalanceDelta(key, hookDelta, address(key.hooks));
 
         _accountPoolBalanceDelta(key, swapDelta, msg.sender);
     }
 
-    /// @notice Internal swap function to execute a swap, take protocol fees on input token, and emit the swap event
+    /// @notice 内部兑换函数：执行兑换（swap）、对输入代币收取协议手续费，并发出 swap 事件
     function _swap(Pool.State storage pool, PoolId id, Pool.SwapParams memory params, Currency inputCurrency)
         internal
         returns (BalanceDelta)
@@ -234,10 +234,10 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
         (BalanceDelta delta, uint256 amountToProtocol, uint24 swapFee, Pool.SwapResult memory result) =
             pool.swap(params);
 
-        // the fee is on the input currency
+        // 手续费以输入代币计收
         if (amountToProtocol > 0) _updateProtocolFees(inputCurrency, amountToProtocol);
 
-        // event is emitted before the afterSwap call to ensure events are always emitted in order
+        // 事件在调用 afterSwap 之前发出，以确保事件始终按顺序发出
         emit Swap(
             id,
             msg.sender,
@@ -269,7 +269,7 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
 
         _accountPoolBalanceDelta(key, delta, msg.sender);
 
-        // event is emitted before the afterDonate call to ensure events are always emitted in order
+        // 事件在调用 afterDonate 之前发出，以确保事件始终按顺序发出
         emit Donate(poolId, msg.sender, amount0, amount1);
 
         key.hooks.afterDonate(key, amount0, amount1, hookData);
@@ -277,9 +277,9 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
 
     /// @inheritdoc IPoolManager
     function sync(Currency currency) external {
-        // address(0) is used for the native currency
+        // address(0) 用于表示原生代币
         if (currency.isAddressZero()) {
-            // The reserves balance is not used for native settling, so we only need to reset the currency.
+            // 原生代币结算不使用储备余额，因此只需重置代币即可。
             CurrencyReserves.resetCurrency();
         } else {
             uint256 balance = currency.balanceOfSelf();
@@ -290,7 +290,7 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
     /// @inheritdoc IPoolManager
     function take(Currency currency, address to, uint256 amount) external onlyWhenUnlocked {
         unchecked {
-            // negation must be safe as amount is not negative
+            // 由于 amount 非负，取负操作必然安全
             _accountDelta(currency, -(amount.toInt128()), msg.sender);
             currency.transfer(to, amount);
         }
@@ -309,10 +309,10 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
     /// @inheritdoc IPoolManager
     function clear(Currency currency, uint256 amount) external onlyWhenUnlocked {
         int256 current = currency.getDelta(msg.sender);
-        // Because input is `uint256`, only positive amounts can be cleared.
+        // 由于输入为 `uint256`，只能清除正数金额。
         int128 amountDelta = amount.toInt128();
         if (amountDelta != current) MustClearExactPositiveDelta.selector.revertWith();
-        // negation must be safe as amountDelta is positive
+        // 由于 amountDelta 为正数，取负操作必然安全
         unchecked {
             _accountDelta(currency, -(amountDelta), msg.sender);
         }
@@ -322,7 +322,7 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
     function mint(address to, uint256 id, uint256 amount) external onlyWhenUnlocked {
         unchecked {
             Currency currency = CurrencyLibrary.fromId(id);
-            // negation must be safe as amount is not negative
+            // 由于 amount 非负，取负操作必然安全
             _accountDelta(currency, -(amount.toInt128()), msg.sender);
             _mint(to, currency.toId(), amount);
         }
@@ -345,16 +345,16 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
         _pools[id].setLPFee(newDynamicLPFee);
     }
 
-    // if settling native, integrators should still call `sync` first to avoid DoS attack vectors
+    // 如果结算原生代币，集成方仍应先调用 `sync`，以避免 DoS 攻击途径
     function _settle(address recipient) internal returns (uint256 paid) {
         Currency currency = CurrencyReserves.getSyncedCurrency();
 
-        // if not previously synced, or the syncedCurrency slot has been reset, expects native currency to be settled
+        // 如果此前未同步，或 syncedCurrency 存储槽已被重置，则预期结算的是原生代币
         if (currency.isAddressZero()) {
             paid = msg.value;
         } else {
             if (msg.value > 0) NonzeroNativeValue.selector.revertWith();
-            // Reserves are guaranteed to be set because currency and reserves are always set together
+            // 储备必定已设置，因为代币与储备总是同时设置
             uint256 reservesBefore = CurrencyReserves.getSyncedReserves();
             uint256 reservesNow = currency.balanceOfSelf();
             paid = reservesNow - reservesBefore;
@@ -364,7 +364,7 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
         _accountDelta(currency, paid.toInt128(), recipient);
     }
 
-    /// @notice Adds a balance delta in a currency for a target address
+    /// @notice 为目标地址在某个代币上累加一笔余额 delta
     function _accountDelta(Currency currency, int128 delta, address target) internal {
         if (delta == 0) return;
 
@@ -377,18 +377,18 @@ contract PoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claim
         }
     }
 
-    /// @notice Accounts the deltas of 2 currencies to a target address
+    /// @notice 将 2 种代币的 delta 记账到目标地址
     function _accountPoolBalanceDelta(PoolKey memory key, BalanceDelta delta, address target) internal {
         _accountDelta(key.currency0, delta.amount0(), target);
         _accountDelta(key.currency1, delta.amount1(), target);
     }
 
-    /// @notice Implementation of the _getPool function defined in ProtocolFees
+    /// @notice ProtocolFees 中定义的 _getPool 函数的实现
     function _getPool(PoolId id) internal view override returns (Pool.State storage) {
         return _pools[id];
     }
 
-    /// @notice Implementation of the _isUnlocked function defined in ProtocolFees
+    /// @notice ProtocolFees 中定义的 _isUnlocked 函数的实现
     function _isUnlocked() internal view override returns (bool) {
         return Lock.isUnlocked();
     }

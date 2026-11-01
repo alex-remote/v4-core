@@ -38,12 +38,12 @@ contract CustomCurveHook is BaseTestHooks {
     ) external override onlyPoolManager returns (bytes4, BeforeSwapDelta, uint24) {
         (Currency inputCurrency, Currency outputCurrency, uint256 amount) = _getInputOutputAndAmount(key, params);
 
-        // this "custom curve" is a line, 1-1
-        // take the full input amount, and give the full output amount
+        // 这条“自定义曲线”是一条直线，兑换比例为 1:1
+        // 提取全部输入数量，并支付全部输出数量
         manager.take(inputCurrency, address(this), amount);
         outputCurrency.settle(manager, address(this), amount, false);
 
-        // return -amountSpecified as specified to no-op the concentrated liquidity swap
+        // 将 -amountSpecified 作为指定代币的 delta 返回，使集中流动性兑换（swap）成为空操作（no-op）
         BeforeSwapDelta hookDelta = toBeforeSwapDelta(int128(-params.amountSpecified), int128(params.amountSpecified));
         return (IHooks.beforeSwap.selector, hookDelta, 0);
     }

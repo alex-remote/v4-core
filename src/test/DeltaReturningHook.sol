@@ -84,8 +84,8 @@ contract DeltaReturningHook is BaseTestHooks {
     }
 
     function _settleOrTake(Currency currency, int128 delta) internal {
-        // positive amount means positive delta for the hook, so it can take
-        // negative it should settle
+        // 数量为正表示 hook 的 delta 为正，因此它可以提取
+        // 数量为负则它应当结算
         if (delta > 0) {
             currency.take(manager, address(this), uint128(delta), false);
         } else {

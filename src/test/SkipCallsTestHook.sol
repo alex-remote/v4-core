@@ -133,7 +133,7 @@ contract SkipCallsTestHook is BaseTestHooks, Test {
     }
 
     function _initialize(PoolKey memory key, uint160 sqrtPriceX96) public {
-        // initialize a new pool with different fee
+        // 用不同的手续费初始化一个新池子
         key.fee = 2000;
         IPoolManager(manager).initialize(key, sqrtPriceX96);
     }
@@ -165,11 +165,11 @@ contract SkipCallsTestHook is BaseTestHooks, Test {
     function _removeLiquidity(PoolKey calldata key, ModifyLiquidityParams memory params, bytes calldata hookData)
         public
     {
-        // first hook needs to add liquidity for itself
+        // hook 首先需要为自己添加流动性
         ModifyLiquidityParams memory newParams =
             ModifyLiquidityParams({tickLower: -120, tickUpper: 120, liquidityDelta: 1e18, salt: 0});
         IPoolManager(manager).modifyLiquidity(key, newParams, hookData);
-        // hook removes liquidity
+        // hook 移除流动性
         IPoolManager(manager).modifyLiquidity(key, params, hookData);
         address payer = abi.decode(hookData, (address));
         int256 delta0 = IPoolManager(manager).currencyDelta(address(this), key.currency0);

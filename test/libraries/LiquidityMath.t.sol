@@ -20,7 +20,7 @@ contract LiquidityMathTest is Test {
         liquidityMathRef = new LiquidityMathRef();
     }
 
-    /// @notice Test the revert reason for underflow
+    /// @notice 测试下溢时的回滚（revert）原因
     function test_addDelta_throwsForUnderflow() public {
         vm.expectRevert(SafeCast.SafeCastOverflow.selector);
         liquidityMath.addDelta(0, -1);
@@ -28,7 +28,7 @@ contract LiquidityMathTest is Test {
         liquidityMath.addDelta(uint128(type(int128).max), type(int128).min);
     }
 
-    /// @notice Test the revert reason for overflow
+    /// @notice 测试溢出时的回滚（revert）原因
     function test_addDelta_throwsForOverflow() public {
         vm.expectRevert(SafeCast.SafeCastOverflow.selector);
         liquidityMath.addDelta(type(uint128).max, 1);
@@ -45,7 +45,7 @@ contract LiquidityMathTest is Test {
         assertEq(liquidityMath.addDelta(x, type(int128).min), x - uint128(type(int128).min));
     }
 
-    /// @notice Test the equivalence of the new `addDelta` and the reference implementation
+    /// @notice 测试新的 `addDelta` 与参考实现是否等价
     function test_addDelta_fuzz(uint128 x, int128 y) public {
         vm.assume(y != type(int128).min);
         try liquidityMath.addDelta(x, y) returns (uint128 z) {

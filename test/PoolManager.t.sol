@@ -259,11 +259,11 @@ contract PoolManagerTest is Test, Deployers {
         mockHooks.setReturnValue(mockHooks.beforeAddLiquidity.selector, bytes4(0xdeadbeef));
         mockHooks.setReturnValue(mockHooks.afterAddLiquidity.selector, bytes4(0xdeadbeef));
 
-        // Fails at beforeAddLiquidity hook.
+        // 在 beforeAddLiquidity hook 处失败。
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, ZERO_BYTES);
 
-        // Fail at afterAddLiquidity hook.
+        // 在 afterAddLiquidity hook 处失败。
         mockHooks.setReturnValue(mockHooks.beforeAddLiquidity.selector, mockHooks.beforeAddLiquidity.selector);
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, ZERO_BYTES);
@@ -282,11 +282,11 @@ contract PoolManagerTest is Test, Deployers {
         mockHooks.setReturnValue(mockHooks.beforeRemoveLiquidity.selector, bytes4(0xdeadbeef));
         mockHooks.setReturnValue(mockHooks.afterRemoveLiquidity.selector, bytes4(0xdeadbeef));
 
-        // Fails at beforeRemoveLiquidity hook.
+        // 在 beforeRemoveLiquidity hook 处失败。
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         modifyLiquidityRouter.modifyLiquidity(key, REMOVE_LIQUIDITY_PARAMS, ZERO_BYTES);
 
-        // Fail at afterRemoveLiquidity hook.
+        // 在 afterRemoveLiquidity hook 处失败。
         mockHooks.setReturnValue(mockHooks.beforeRemoveLiquidity.selector, mockHooks.beforeRemoveLiquidity.selector);
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         modifyLiquidityRouter.modifyLiquidity(key, REMOVE_LIQUIDITY_PARAMS, ZERO_BYTES);
@@ -344,7 +344,7 @@ contract PoolManagerTest is Test, Deployers {
     }
 
     function test_addLiquidity_6909() public {
-        // convert test tokens into ERC6909 claims
+        // 将测试代币转换为 ERC6909 claims 凭证
         claimsRouter.deposit(currency0, address(this), 10_000e18);
         claimsRouter.deposit(currency1, address(this), 10_000e18);
         assertEq(manager.balanceOf(address(this), currency0.toId()), 10_000e18);
@@ -355,20 +355,20 @@ contract PoolManagerTest is Test, Deployers {
         uint256 currency0PMBalanceBefore = currency0.balanceOf(address(manager));
         uint256 currency1PMBalanceBefore = currency1.balanceOf(address(manager));
 
-        // allow liquidity router to burn our 6909 tokens
+        // 允许流动性路由合约销毁我们的 6909 代币
         manager.setOperator(address(modifyLiquidityRouter), true);
 
-        // add liquidity with 6909: settleUsingBurn=true, takeClaims=true (unused)
+        // 使用 6909 添加流动性：settleUsingBurn=true，takeClaims=true（未使用）
         modifyLiquidityRouter.modifyLiquidity(key, LIQUIDITY_PARAMS, ZERO_BYTES, true, true);
 
         assertLt(manager.balanceOf(address(this), currency0.toId()), 10_000e18);
         assertLt(manager.balanceOf(address(this), currency1.toId()), 10_000e18);
 
-        // ERC20s are unspent
+        // ERC20 未被花费
         assertEq(currency0.balanceOfSelf(), currency0BalanceBefore);
         assertEq(currency1.balanceOfSelf(), currency1BalanceBefore);
 
-        // PoolManager did not receive net-new ERC20s
+        // PoolManager 没有收到净新增的 ERC20
         assertEq(currency0.balanceOf(address(manager)), currency0PMBalanceBefore);
         assertEq(currency1.balanceOf(address(manager)), currency1PMBalanceBefore);
     }
@@ -384,17 +384,17 @@ contract PoolManagerTest is Test, Deployers {
         uint256 currency0PMBalanceBefore = currency0.balanceOf(address(manager));
         uint256 currency1PMBalanceBefore = currency1.balanceOf(address(manager));
 
-        // remove liquidity as 6909: settleUsingBurn=true (unused), takeClaims=true
+        // 以 6909 形式移除流动性：settleUsingBurn=true（未使用），takeClaims=true
         modifyLiquidityRouter.modifyLiquidity(key, REMOVE_LIQUIDITY_PARAMS, ZERO_BYTES, true, true);
 
         assertTrue(manager.balanceOf(address(this), currency0.toId()) > 0);
         assertTrue(manager.balanceOf(address(this), currency1.toId()) > 0);
 
-        // ERC20s are unspent
+        // ERC20 未被花费
         assertEq(currency0.balanceOfSelf(), currency0BalanceBefore);
         assertEq(currency1.balanceOfSelf(), currency1BalanceBefore);
 
-        // PoolManager did lose ERC-20s
+        // PoolManager 未损失 ERC-20（原文 "did lose" 疑为笔误，断言余额不变）
         assertEq(currency0.balanceOf(address(manager)), currency0PMBalanceBefore);
         assertEq(currency1.balanceOf(address(manager)), currency1PMBalanceBefore);
     }
@@ -417,7 +417,7 @@ contract PoolManagerTest is Test, Deployers {
     function test_removeLiquidity_gas() public {
         ModifyLiquidityParams memory uniqueParams =
             ModifyLiquidityParams({tickLower: -300, tickUpper: -180, liquidityDelta: 1e18, salt: 0});
-        // add some liquidity to remove
+        // 添加一些流动性以供移除
         modifyLiquidityNoChecks.modifyLiquidity(key, uniqueParams, ZERO_BYTES);
 
         uniqueParams.liquidityDelta *= -1;
@@ -426,7 +426,7 @@ contract PoolManagerTest is Test, Deployers {
     }
 
     function test_removeLiquidity_someLiquidityRemains_gas() public {
-        // add double the liquidity to remove
+        // 添加两倍于待移除数量的流动性
         ModifyLiquidityParams memory uniqueParams =
             ModifyLiquidityParams({tickLower: -300, tickUpper: -180, liquidityDelta: 1e18, salt: 0});
         modifyLiquidityNoChecks.modifyLiquidity(key, uniqueParams, ZERO_BYTES);
@@ -576,11 +576,11 @@ contract PoolManagerTest is Test, Deployers {
         mockHooks.setReturnValue(mockHooks.beforeSwap.selector, bytes4(0xdeadbeef));
         mockHooks.setReturnValue(mockHooks.afterSwap.selector, bytes4(0xdeadbeef));
 
-        // Fails at beforeSwap hook.
+        // 在 beforeSwap hook 处失败。
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         swapRouter.swap(key, swapParams, testSettings, ZERO_BYTES);
 
-        // Fail at afterSwap hook.
+        // 在 afterSwap hook 处失败。
         mockHooks.setReturnValue(mockHooks.beforeSwap.selector, mockHooks.beforeSwap.selector);
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         swapRouter.swap(key, swapParams, testSettings, ZERO_BYTES);
@@ -698,10 +698,10 @@ contract PoolManagerTest is Test, Deployers {
         uint256 erc6909Balance = manager.balanceOf(address(this), uint256(uint160(Currency.unwrap(currency1))));
         assertEq(erc6909Balance, 98);
 
-        // give permission for swapRouter to burn the 6909s
+        // 授权 swapRouter 销毁这些 6909 代币
         manager.setOperator(address(swapRouter), true);
 
-        // swap from currency1 to currency0 again, using 6909s as input tokens
+        // 再次从 currency1 兑换（swap）为 currency0，使用 6909 代币作为输入代币
         SwapParams memory params =
             SwapParams({zeroForOne: false, amountSpecified: 25, sqrtPriceLimitX96: SQRT_PRICE_4_1});
         testSettings = PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: true});
@@ -731,10 +731,10 @@ contract PoolManagerTest is Test, Deployers {
         uint256 erc6909Balance = manager.balanceOf(address(this), CurrencyLibrary.toId(CurrencyLibrary.ADDRESS_ZERO));
         assertEq(erc6909Balance, 98);
 
-        // give permission for swapRouter to burn the 6909s
+        // 授权 swapRouter 销毁这些 6909 代币
         manager.setOperator(address(swapRouter), true);
 
-        // swap from currency0 to currency1, using 6909s as input tokens
+        // 从 currency0 兑换（swap）为 currency1，使用 6909 代币作为输入代币
         params = SwapParams({zeroForOne: true, amountSpecified: 25, sqrtPriceLimitX96: SQRT_PRICE_1_4});
         testSettings = PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: true});
 
@@ -742,7 +742,7 @@ contract PoolManagerTest is Test, Deployers {
         emit Transfer(
             address(swapRouter), address(this), address(0), CurrencyLibrary.toId(CurrencyLibrary.ADDRESS_ZERO), 27
         );
-        // don't have to send in native currency since burning 6909 for input
+        // 无需发送原生代币，因为输入是通过销毁 6909 提供的
         swapRouter.swap(nativeKey, params, testSettings, ZERO_BYTES);
         vm.snapshotGasLastCall("swap burn native 6909 for input");
 
@@ -792,21 +792,21 @@ contract PoolManagerTest is Test, Deployers {
         (,, slot0ProtocolFee,) = manager.getSlot0(key.toId());
         assertEq(slot0ProtocolFee, protocolFee);
 
-        // Add liquidity - Fees dont accrue for positive liquidity delta.
+        // 添加流动性——正的流动性 delta 不会累积手续费。
         ModifyLiquidityParams memory params = LIQUIDITY_PARAMS;
         modifyLiquidityRouter.modifyLiquidity(key, params, ZERO_BYTES);
 
         assertEq(manager.protocolFeesAccrued(currency0), 0);
         assertEq(manager.protocolFeesAccrued(currency1), 0);
 
-        // Remove liquidity - Fees dont accrue for negative liquidity delta.
+        // 移除流动性——负的流动性 delta 不会累积手续费。
         params.liquidityDelta = -LIQUIDITY_PARAMS.liquidityDelta;
         modifyLiquidityRouter.modifyLiquidity(key, params, ZERO_BYTES);
 
         assertEq(manager.protocolFeesAccrued(currency0), 0);
         assertEq(manager.protocolFeesAccrued(currency1), 0);
 
-        // Now re-add the liquidity to test swap
+        // 现在重新添加流动性以测试兑换（swap）
         params.liquidityDelta = LIQUIDITY_PARAMS.liquidityDelta;
         modifyLiquidityRouter.modifyLiquidity(key, params, ZERO_BYTES);
 
@@ -837,7 +837,7 @@ contract PoolManagerTest is Test, Deployers {
         donateRouter.donate(key, 100, 100, ZERO_BYTES);
     }
 
-    // test successful donation if pool has liquidity
+    // 测试池子有流动性时捐赠成功
     function test_donate_succeedsWhenPoolHasLiquidity() public {
         (uint256 feeGrowthGlobal0X128, uint256 feeGrowthGlobal1X128) = manager.getFeeGrowthGlobals(key.toId());
         assertEq(feeGrowthGlobal0X128, 0);
@@ -875,11 +875,11 @@ contract PoolManagerTest is Test, Deployers {
         mockHooks.setReturnValue(mockHooks.beforeDonate.selector, bytes4(0xdeadbeef));
         mockHooks.setReturnValue(mockHooks.afterDonate.selector, bytes4(0xdeadbeef));
 
-        // Fails at beforeDonate hook.
+        // 在 beforeDonate hook 处失败。
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         donateRouter.donate(key, 100, 200, ZERO_BYTES);
 
-        // Fail at afterDonate hook.
+        // 在 afterDonate hook 处失败。
         mockHooks.setReturnValue(mockHooks.beforeDonate.selector, mockHooks.beforeDonate.selector);
         vm.expectRevert(Hooks.InvalidHookResponse.selector);
         donateRouter.donate(key, 100, 200, ZERO_BYTES);
@@ -949,14 +949,14 @@ contract PoolManagerTest is Test, Deployers {
         );
         takeRouter.take(key, amount0, amount1);
 
-        // should not revert when non zero amount passed in for valid currency
-        // assertions inside takeRouter because it takes then settles
+        // 对有效代币传入非零数量时不应回滚（revert）
+        // 断言位于 takeRouter 内部，因为它会先提取再结算
         (amount0, amount1) = currency0Invalid ? (0, 1) : (1, 0);
         takeRouter.take(key, amount0, amount1);
     }
 
     function test_take_succeedsWithPoolWithLiquidity() public {
-        takeRouter.take(key, 1, 1); // assertions inside takeRouter because it takes then settles
+        takeRouter.take(key, 1, 1); // 断言位于 takeRouter 内部，因为它会先提取再结算
     }
 
     function test_take_failsIfLocked() public {
@@ -965,7 +965,7 @@ contract PoolManagerTest is Test, Deployers {
     }
 
     function test_take_succeedsWithPoolWithLiquidityWithNativeToken() public {
-        takeRouter.take{value: 1}(nativeKey, 1, 1); // assertions inside takeRouter because it takes then settles
+        takeRouter.take{value: 1}(nativeKey, 1, 1); // 断言位于 takeRouter 内部，因为它会先提取再结算
     }
 
     function test_settle_failsIfLocked() public {
@@ -980,7 +980,7 @@ contract PoolManagerTest is Test, Deployers {
         actions[0] = Actions.SYNC;
         params[0] = abi.encode(key.currency0);
 
-        // Revert with NonzeroNativeValue
+        // 以 NonzeroNativeValue 回滚（revert）
         actions[1] = Actions.SETTLE_NATIVE;
         params[1] = abi.encode(1);
 
@@ -1000,7 +1000,7 @@ contract PoolManagerTest is Test, Deployers {
 
     function test_collectProtocolFees_locked_revertsWithProtocolFeeCurrencySynced() public noIsolate {
         manager.setProtocolFeeController(address(this));
-        // currency1 is never native
+        // currency1 永远不会是原生代币
         manager.sync(key.currency1);
         assertEq(Currency.unwrap(key.currency1), Currency.unwrap(manager.getSyncedCurrency()));
         vm.expectRevert(IProtocolFees.ProtocolFeeCurrencySynced.selector);
@@ -1208,7 +1208,7 @@ contract PoolManagerTest is Test, Deployers {
     //     }
     //     (uint160 sqrtPriceX96Slot0,,,,,) = manager.getSlot0(poolId);
 
-    //     // assert that extsload loads the correct storage slot which matches the true slot0
+    //     // 断言 extsload 读取了正确的存储槽，与真实的 slot0 一致
     //     assertEq(sqrtPriceX96Extsload, sqrtPriceX96Slot0);
     // }
 
@@ -1222,7 +1222,7 @@ contract PoolManagerTest is Test, Deployers {
     //     });
     //     manager.initialize(key, SQRT_PRICE_1_1);
 
-    //     // populate feeGrowthGlobalX128 struct w/ modify + swap
+    //     // 通过 modify + swap 填充 feeGrowthGlobalX128 结构体
     //     modifyLiquidityRouter.modifyLiquidity(key, ModifyLiquidityParams(-120, 120, 5 ether, 0));
     //     swapRouter.swap(
     //         key,

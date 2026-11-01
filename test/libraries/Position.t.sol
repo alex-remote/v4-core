@@ -40,7 +40,7 @@ contract PositionTest is Test {
             vm.expectRevert(Position.CannotUpdateEmptyPosition.selector);
         }
 
-        // new liquidity cannot overflow/underflow uint128
+        // 新的流动性不能使 uint128 溢出/下溢
         uint256 absLiquidityDelta;
         if (liquidityDelta > 0) {
             absLiquidityDelta = uint256(uint128(liquidityDelta));

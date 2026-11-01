@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import {IERC20Minimal} from "../interfaces/external/IERC20Minimal.sol";
 
-// Regular ERC20 but it doesn't return true on transfer.
+// 普通的 ERC20，但 transfer 时不返回 true。
 contract TestInvalidERC20 is IERC20Minimal {
     mapping(address => uint256) public override balanceOf;
     mapping(address => mapping(address => uint256)) public override allowance;
@@ -28,7 +28,7 @@ contract TestInvalidERC20 is IERC20Minimal {
         balanceOf[recipient] = balanceRecipient + amount;
 
         emit Transfer(msg.sender, recipient, amount);
-        return false; // returns false even though it succeeded
+        return false; // 即使执行成功也返回 false
     }
 
     function approve(address spender, uint256 amount) external override returns (bool) {
@@ -51,6 +51,6 @@ contract TestInvalidERC20 is IERC20Minimal {
         balanceOf[sender] = balanceSender - amount;
 
         emit Transfer(sender, recipient, amount);
-        return false; // returns false even though it succeeded
+        return false; // 即使执行成功也返回 false
     }
 }

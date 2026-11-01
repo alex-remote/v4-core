@@ -3,13 +3,13 @@ pragma solidity ^0.8.0;
 
 import {IERC6909Claims} from "./interfaces/external/IERC6909Claims.sol";
 
-/// @notice Minimalist and gas efficient standard ERC6909 implementation.
+/// @notice 极简且节省 gas 的标准 ERC6909 实现。
 /// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/tokens/ERC6909.sol)
-/// @dev Copied from the commit at 4b47a19038b798b4a33d9749d25e570443520647
-/// @dev This contract has been modified from the implementation at the above link.
+/// @dev 复制自提交 4b47a19038b798b4a33d9749d25e570443520647
+/// @dev 本合约在上述链接的实现基础上做了修改。
 abstract contract ERC6909 is IERC6909Claims {
     /*//////////////////////////////////////////////////////////////
-                             ERC6909 STORAGE
+                             ERC6909 存储
     //////////////////////////////////////////////////////////////*/
 
     mapping(address owner => mapping(address operator => bool isOperator)) public isOperator;
@@ -19,7 +19,7 @@ abstract contract ERC6909 is IERC6909Claims {
     mapping(address owner => mapping(address spender => mapping(uint256 id => uint256 amount))) public allowance;
 
     /*//////////////////////////////////////////////////////////////
-                              ERC6909 LOGIC
+                              ERC6909 逻辑
     //////////////////////////////////////////////////////////////*/
 
     function transfer(address receiver, uint256 id, uint256 amount) public virtual returns (bool) {
@@ -64,16 +64,16 @@ abstract contract ERC6909 is IERC6909Claims {
     }
 
     /*//////////////////////////////////////////////////////////////
-                              ERC165 LOGIC
+                              ERC165 逻辑
     //////////////////////////////////////////////////////////////*/
 
     function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
-        return interfaceId == 0x01ffc9a7 // ERC165 Interface ID for ERC165
-            || interfaceId == 0x0f632fb3; // ERC165 Interface ID for ERC6909
+        return interfaceId == 0x01ffc9a7 // ERC165 自身的 ERC165 接口 ID
+            || interfaceId == 0x0f632fb3; // ERC6909 的 ERC165 接口 ID
     }
 
     /*//////////////////////////////////////////////////////////////
-                        INTERNAL MINT/BURN LOGIC
+                        内部铸造/销毁（mint/burn）逻辑
     //////////////////////////////////////////////////////////////*/
 
     function _mint(address receiver, uint256 id, uint256 amount) internal virtual {

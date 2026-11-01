@@ -26,7 +26,7 @@ import {Extsload} from "../Extsload.sol";
 import {Exttload} from "../Exttload.sol";
 import {CustomRevert} from "../libraries/CustomRevert.sol";
 
-/// @notice A proxy pool manager that delegates calls to the real/delegate pool manager
+/// @notice 一个代理 pool manager，将调用委托（delegatecall）给真实的/被委托的 pool manager
 contract ProxyPoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909Claims, Extsload, Exttload {
     using SafeCast for *;
     using Pool for *;
@@ -48,7 +48,7 @@ contract ProxyPoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909
         _delegateManager = delegateManager;
     }
 
-    /// @notice This will revert if the contract is locked
+    /// @notice 如果合约处于锁定状态，将会回滚（revert）
     modifier onlyWhenUnlocked() {
         if (!Lock.isUnlocked()) ManagerLocked.selector.revertWith();
         _;
@@ -60,7 +60,7 @@ contract ProxyPoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909
 
         Lock.unlock();
 
-        // the caller does everything in this callback, including paying what they owe via calls to settle
+        // 调用者在此回调中完成所有操作，包括通过调用 settle 支付其所欠的款项
         result = IUnlockCallback(msg.sender).unlockCallback(data);
 
         if (NonzeroDeltaCount.read() != 0) CurrencyNotSettled.selector.revertWith();
@@ -69,7 +69,7 @@ contract ProxyPoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909
 
     /// @inheritdoc IPoolManager
     function initialize(PoolKey memory key, uint160 sqrtPriceX96) external noDelegateCall returns (int24 tick) {
-        // see TickBitmap.sol for overflow conditions that can arise from tick spacing being too large
+        // tick 间距过大可能引发的溢出情况，参见 TickBitmap.sol
         if (key.tickSpacing > MAX_TICK_SPACING) TickSpacingTooLarge.selector.revertWith(key.tickSpacing);
         if (key.tickSpacing < MIN_TICK_SPACING) TickSpacingTooSmall.selector.revertWith(key.tickSpacing);
         if (key.currency0 >= key.currency1) {
@@ -89,8 +89,8 @@ contract ProxyPoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909
 
         key.hooks.afterInitialize(key, sqrtPriceX96, tick);
 
-        // emit all details of a pool key. poolkeys are not saved in storage and must always be provided by the caller
-        // the key's fee may be a static fee or a sentinel to denote a dynamic fee.
+        // 触发事件，输出池子 key 的全部细节。池子 key 不会保存在存储中，必须始终由调用者提供
+        // key 中的手续费可能是静态手续费，也可能是表示动态手续费的哨兵值。
         emit Initialize(id, key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks, sqrtPriceX96, tick);
     }
 
@@ -137,9 +137,9 @@ contract ProxyPoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909
 
     /// @inheritdoc IPoolManager
     function sync(Currency currency) public {
-        // address(0) is used for the native currency
+        // address(0) 用于表示原生代币
         if (currency.isAddressZero()) {
-            // The reserves balance is not used for native settling, so we only need to reset the currency.
+            // 原生代币结算不使用储备余额，因此只需重置代币即可。
             CurrencyReserves.resetCurrency();
         } else {
             uint256 balance = currency.balanceOfSelf();
@@ -192,7 +192,7 @@ contract ProxyPoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909
         _pools[id].setLPFee(newDynamicLPFee);
     }
 
-    /// @notice Make a delegate call, bubble up any error or return the result
+    /// @notice 执行 delegatecall，若出错则向上冒泡错误，否则返回结果
     function _delegateCall(address target, bytes memory data) internal returns (bytes memory result) {
         (bool success, bytes memory returnData) = target.delegatecall(data);
 
@@ -210,12 +210,12 @@ contract ProxyPoolManager is IPoolManager, ProtocolFees, NoDelegateCall, ERC6909
         return returnData;
     }
 
-    /// @notice Implementation of the _getPool function defined in ProtocolFees
+    /// @notice ProtocolFees 中定义的 _getPool 函数的实现
     function _getPool(PoolId id) internal view override returns (Pool.State storage) {
         return _pools[id];
     }
 
-    /// @notice Implementation of the _isUnlocked function defined in ProtocolFees
+    /// @notice ProtocolFees 中定义的 _isUnlocked 函数的实现
     function _isUnlocked() internal view override returns (bool) {
         return Lock.isUnlocked();
     }

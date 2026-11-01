@@ -54,7 +54,7 @@ contract LPFeeLibraryTest is Test {
     }
 
     function test_getInitialLPFee_forStaticFeeIsCorrect() public pure {
-        uint24 staticFee = 3000; // 30 bps
+        uint24 staticFee = 3000; // 30 个基点（bps）
         assertEq(LPFeeLibrary.getInitialLPFee(staticFee), staticFee);
     }
 

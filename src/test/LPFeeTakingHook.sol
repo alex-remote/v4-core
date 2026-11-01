@@ -11,8 +11,8 @@ import {BalanceDelta, toBalanceDelta} from "../types/BalanceDelta.sol";
 import {Currency} from "../types/Currency.sol";
 import {BaseTestHooks} from "./BaseTestHooks.sol";
 
-/// @notice a hook that takes all of the LP fee revenue
-/// @dev an example test hook to validate the data is provided correctly
+/// @notice 一个提取全部 LP 手续费收入的 hook
+/// @dev 一个示例测试 hook，用于验证数据是否被正确提供
 contract LPFeeTakingHook is BaseTestHooks {
     using Hooks for IHooks;
     using SafeCast for uint256;

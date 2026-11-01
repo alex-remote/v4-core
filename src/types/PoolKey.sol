@@ -7,16 +7,16 @@ import {PoolIdLibrary} from "./PoolId.sol";
 
 using PoolIdLibrary for PoolKey global;
 
-/// @notice Returns the key for identifying a pool
+/// @notice 返回用于标识一个池子的 key
 struct PoolKey {
-    /// @notice The lower currency of the pool, sorted numerically
+    /// @notice 池子中按数值排序较小的代币
     Currency currency0;
-    /// @notice The higher currency of the pool, sorted numerically
+    /// @notice 池子中按数值排序较大的代币
     Currency currency1;
-    /// @notice The pool LP fee, capped at 1_000_000. If the highest bit is 1, the pool has a dynamic fee and must be exactly equal to 0x800000
+    /// @notice 池子的 LP 手续费，上限为 1_000_000。若最高位为 1，则该池子使用动态手续费，且该值必须恰好等于 0x800000
     uint24 fee;
-    /// @notice Ticks that involve positions must be a multiple of tick spacing
+    /// @notice 涉及头寸的 tick 必须是 tick 间距的整数倍
     int24 tickSpacing;
-    /// @notice The hooks of the pool
+    /// @notice 池子的 hook 合约
     IHooks hooks;
 }

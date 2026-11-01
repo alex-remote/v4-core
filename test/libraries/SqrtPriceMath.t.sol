@@ -79,7 +79,7 @@ contract SqrtPriceMathTest is Test {
 
         uint160 sqrtQ = SqrtPriceMath.getNextSqrtPriceFromInput(sqrtP, uint128(10 ether), 2 ** 100, true);
 
-        // perfect answer:
+        // 精确答案：
         // https://www.wolframalpha.com/input/?i=624999999995069620+-+%28%281e19+*+1+%2F+%281e19+%2B+2%5E100+*+1%29%29+*+2%5E96%29
         assertEq(sqrtQ, 624999999995069620);
     }

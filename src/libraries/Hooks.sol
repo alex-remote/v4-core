@@ -12,10 +12,10 @@ import {ModifyLiquidityParams, SwapParams} from "../types/PoolOperation.sol";
 import {ParseBytes} from "./ParseBytes.sol";
 import {CustomRevert} from "./CustomRevert.sol";
 
-/// @notice V4 decides whether to invoke specific hooks by inspecting the least significant bits
-/// of the address that the hooks contract is deployed to.
-/// For example, a hooks contract deployed to address: 0x0000000000000000000000000000000000002400
-/// has the lowest bits '10 0100 0000 0000' which would cause the 'before initialize' and 'after add liquidity' hooks to be used.
+/// @notice V4 通过检查 hook 合约部署地址的最低有效位
+/// 来决定是否调用特定的 hook。
+/// 例如，部署在地址 0x0000000000000000000000000000000000002400 的 hook 合约，
+/// 其最低位为 '10 0100 0000 0000'，这会使 'before initialize' 和 'after add liquidity' 这两个 hook 被调用。
 library Hooks {
     using LPFeeLibrary for uint24;
     using Hooks for IHooks;
@@ -63,23 +63,23 @@ library Hooks {
         bool afterRemoveLiquidityReturnDelta;
     }
 
-    /// @notice Thrown if the address will not lead to the specified hook calls being called
-    /// @param hooks The address of the hooks contract
+    /// @notice 当该地址无法使指定的 hook 被调用时抛出
+    /// @param hooks hook 合约的地址
     error HookAddressNotValid(address hooks);
 
-    /// @notice Hook did not return its selector
+    /// @notice hook 未返回其选择器
     error InvalidHookResponse();
 
-    /// @notice Additional context for ERC-7751 wrapped error when a hook call fails
+    /// @notice hook 调用失败时，为 ERC-7751 包装错误提供的附加上下文
     error HookCallFailed();
 
-    /// @notice The hook's delta changed the swap from exactIn to exactOut or vice versa
+    /// @notice hook 返回的 delta 使兑换从 exactIn 变成了 exactOut，或者反之
     error HookDeltaExceedsSwapAmount();
 
-    /// @notice Utility function intended to be used in hook constructors to ensure
-    /// the deployed hooks address causes the intended hooks to be called
-    /// @param permissions The hooks that are intended to be called
-    /// @dev permissions param is memory as the function will be called from constructors
+    /// @notice 工具函数，供 hook 合约的构造函数使用，用于确保
+    /// 部署后的 hook 地址会使预期的 hook 被调用
+    /// @param permissions 预期会被调用的 hook
+    /// @dev permissions 参数位于 memory，因为该函数会在构造函数中被调用
     function validateHookPermissions(IHooks self, Permissions memory permissions) internal pure {
         if (
             permissions.beforeInitialize != self.hasPermission(BEFORE_INITIALIZE_FLAG)
@@ -102,12 +102,12 @@ library Hooks {
         }
     }
 
-    /// @notice Ensures that the hook address includes at least one hook flag or dynamic fees, or is the 0 address
-    /// @param self The hook to verify
-    /// @param fee The fee of the pool the hook is used with
-    /// @return bool True if the hook address is valid
+    /// @notice 确保 hook 地址至少包含一个 hook 标志位或使用动态手续费，或者是 0 地址
+    /// @param self 待校验的 hook
+    /// @param fee 使用该 hook 的池子的手续费
+    /// @return bool 若 hook 地址有效则为 true
     function isValidHookAddress(IHooks self, uint24 fee) internal pure returns (bool) {
-        // The hook can only have a flag to return a hook delta on an action if it also has the corresponding action flag
+        // 只有同时具备对应操作的标志位时，hook 才能拥有在该操作上返回 hook delta 的标志位
         if (!self.hasPermission(BEFORE_SWAP_FLAG) && self.hasPermission(BEFORE_SWAP_RETURNS_DELTA_FLAG)) return false;
         if (!self.hasPermission(AFTER_SWAP_FLAG) && self.hasPermission(AFTER_SWAP_RETURNS_DELTA_FLAG)) return false;
         if (!self.hasPermission(AFTER_ADD_LIQUIDITY_FLAG) && self.hasPermission(AFTER_ADD_LIQUIDITY_RETURNS_DELTA_FLAG))
@@ -119,69 +119,69 @@ library Hooks {
                 && self.hasPermission(AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG)
         ) return false;
 
-        // If there is no hook contract set, then fee cannot be dynamic
-        // If a hook contract is set, it must have at least 1 flag set, or have a dynamic fee
+        // 如果未设置 hook 合约，则手续费不能是动态的
+        // 如果设置了 hook 合约，则它必须至少设置 1 个标志位，或者使用动态手续费
         return address(self) == address(0)
             ? !fee.isDynamicFee()
             : (uint160(address(self)) & ALL_HOOK_MASK > 0 || fee.isDynamicFee());
     }
 
-    /// @notice performs a hook call using the given calldata on the given hook that doesn't return a delta
-    /// @return result The complete data returned by the hook
+    /// @notice 使用给定的 calldata 对给定的 hook 发起调用，该调用不返回 delta
+    /// @return result hook 返回的完整数据
     function callHook(IHooks self, bytes memory data) internal returns (bytes memory result) {
         bool success;
         assembly ("memory-safe") {
             success := call(gas(), self, 0, add(data, 0x20), mload(data), 0, 0)
         }
-        // Revert with FailedHookCall, containing any error message to bubble up
+        // 以 FailedHookCall 回滚（revert），其中包含需要向上冒泡的任何错误信息
         if (!success) CustomRevert.bubbleUpAndRevertWith(address(self), bytes4(data), HookCallFailed.selector);
 
-        // The call was successful, fetch the returned data
+        // 调用成功，获取返回的数据
         assembly ("memory-safe") {
-            // allocate result byte array from the free memory pointer
+            // 从空闲内存指针处分配 result 字节数组
             result := mload(0x40)
-            // store new free memory pointer at the end of the array padded to 32 bytes
+            // 将新的空闲内存指针存储在数组末尾（按 32 字节填充对齐）
             mstore(0x40, add(result, and(add(returndatasize(), 0x3f), not(0x1f))))
-            // store length in memory
+            // 将长度存入内存
             mstore(result, returndatasize())
-            // copy return data to result
+            // 将返回数据复制到 result
             returndatacopy(add(result, 0x20), 0, returndatasize())
         }
 
-        // Length must be at least 32 to contain the selector. Check expected selector and returned selector match.
+        // 长度必须至少为 32 才能包含选择器。检查预期的选择器与返回的选择器是否一致。
         if (result.length < 32 || result.parseSelector() != data.parseSelector()) {
             InvalidHookResponse.selector.revertWith();
         }
     }
 
-    /// @notice performs a hook call using the given calldata on the given hook
-    /// @return int256 The delta returned by the hook
+    /// @notice 使用给定的 calldata 对给定的 hook 发起调用
+    /// @return int256 hook 返回的 delta
     function callHookWithReturnDelta(IHooks self, bytes memory data, bool parseReturn) internal returns (int256) {
         bytes memory result = callHook(self, data);
 
-        // If this hook wasn't meant to return something, default to 0 delta
+        // 如果该 hook 本就不需要返回内容，则默认 delta 为 0
         if (!parseReturn) return 0;
 
-        // A length of 64 bytes is required to return a bytes4, and a 32 byte delta
+        // 返回一个 bytes4 和一个 32 字节的 delta 需要 64 字节的长度
         if (result.length != 64) InvalidHookResponse.selector.revertWith();
         return result.parseReturnDelta();
     }
 
-    /// @notice modifier to prevent calling a hook if they initiated the action
+    /// @notice 修饰符：如果操作是由 hook 自己发起的，则不调用该 hook
     modifier noSelfCall(IHooks self) {
         if (msg.sender != address(self)) {
             _;
         }
     }
 
-    /// @notice calls beforeInitialize hook if permissioned and validates return value
+    /// @notice 若具备权限则调用 beforeInitialize hook，并校验返回值
     function beforeInitialize(IHooks self, PoolKey memory key, uint160 sqrtPriceX96) internal noSelfCall(self) {
         if (self.hasPermission(BEFORE_INITIALIZE_FLAG)) {
             self.callHook(abi.encodeCall(IHooks.beforeInitialize, (msg.sender, key, sqrtPriceX96)));
         }
     }
 
-    /// @notice calls afterInitialize hook if permissioned and validates return value
+    /// @notice 若具备权限则调用 afterInitialize hook，并校验返回值
     function afterInitialize(IHooks self, PoolKey memory key, uint160 sqrtPriceX96, int24 tick)
         internal
         noSelfCall(self)
@@ -191,7 +191,7 @@ library Hooks {
         }
     }
 
-    /// @notice calls beforeModifyLiquidity hook if permissioned and validates return value
+    /// @notice 若具备权限则调用 beforeModifyLiquidity hook，并校验返回值
     function beforeModifyLiquidity(
         IHooks self,
         PoolKey memory key,
@@ -205,7 +205,7 @@ library Hooks {
         }
     }
 
-    /// @notice calls afterModifyLiquidity hook if permissioned and validates return value
+    /// @notice 若具备权限则调用 afterModifyLiquidity hook，并校验返回值
     function afterModifyLiquidity(
         IHooks self,
         PoolKey memory key,
@@ -244,7 +244,7 @@ library Hooks {
         }
     }
 
-    /// @notice calls beforeSwap hook if permissioned and validates return value
+    /// @notice 若具备权限则调用 beforeSwap hook，并校验返回值
     function beforeSwap(IHooks self, PoolKey memory key, SwapParams memory params, bytes calldata hookData)
         internal
         returns (int256 amountToSwap, BeforeSwapDelta hookReturn, uint24 lpFeeOverride)
@@ -255,21 +255,21 @@ library Hooks {
         if (self.hasPermission(BEFORE_SWAP_FLAG)) {
             bytes memory result = callHook(self, abi.encodeCall(IHooks.beforeSwap, (msg.sender, key, params, hookData)));
 
-            // A length of 96 bytes is required to return a bytes4, a 32 byte delta, and an LP fee
+            // 返回一个 bytes4、一个 32 字节的 delta 以及一个 LP 手续费需要 96 字节的长度
             if (result.length != 96) InvalidHookResponse.selector.revertWith();
 
-            // dynamic fee pools that want to override the cache fee, return a valid fee with the override flag. If override flag
-            // is set but an invalid fee is returned, the transaction will revert. Otherwise the current LP fee will be used
+            // 想要覆盖缓存手续费的动态手续费池子，应返回一个带有 override 标志位的有效手续费。如果设置了 override 标志位
+            // 但返回的手续费无效，交易将回滚（revert）。否则将使用当前的 LP 手续费
             if (key.fee.isDynamicFee()) lpFeeOverride = result.parseFee();
 
-            // skip this logic for the case where the hook return is 0
+            // 当 hook 的返回值为 0 时跳过这段逻辑
             if (self.hasPermission(BEFORE_SWAP_RETURNS_DELTA_FLAG)) {
                 hookReturn = BeforeSwapDelta.wrap(result.parseReturnDelta());
 
-                // any return in unspecified is passed to the afterSwap hook for handling
+                // unspecified 部分的任何返回值都会交给 afterSwap hook 处理
                 int128 hookDeltaSpecified = hookReturn.getSpecifiedDelta();
 
-                // Update the swap amount according to the hook's return, and check that the swap type doesn't change (exact input/output)
+                // 根据 hook 的返回值更新兑换数量，并检查兑换类型（exact input/output）没有发生改变
                 if (hookDeltaSpecified != 0) {
                     bool exactInput = amountToSwap < 0;
                     amountToSwap += hookDeltaSpecified;
@@ -281,7 +281,7 @@ library Hooks {
         }
     }
 
-    /// @notice calls afterSwap hook if permissioned and validates return value
+    /// @notice 若具备权限则调用 afterSwap hook，并校验返回值
     function afterSwap(
         IHooks self,
         PoolKey memory key,
@@ -308,13 +308,13 @@ library Hooks {
                 ? toBalanceDelta(hookDeltaSpecified, hookDeltaUnspecified)
                 : toBalanceDelta(hookDeltaUnspecified, hookDeltaSpecified);
 
-            // the caller has to pay for (or receive) the hook's delta
+            // 调用者需要为 hook 的 delta 付款（或收款）
             swapDelta = swapDelta - hookDelta;
         }
         return (swapDelta, hookDelta);
     }
 
-    /// @notice calls beforeDonate hook if permissioned and validates return value
+    /// @notice 若具备权限则调用 beforeDonate hook，并校验返回值
     function beforeDonate(IHooks self, PoolKey memory key, uint256 amount0, uint256 amount1, bytes calldata hookData)
         internal
         noSelfCall(self)
@@ -324,7 +324,7 @@ library Hooks {
         }
     }
 
-    /// @notice calls afterDonate hook if permissioned and validates return value
+    /// @notice 若具备权限则调用 afterDonate hook，并校验返回值
     function afterDonate(IHooks self, PoolKey memory key, uint256 amount0, uint256 amount1, bytes calldata hookData)
         internal
         noSelfCall(self)

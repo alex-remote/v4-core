@@ -1,48 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/// @title Minimal ERC20 interface for Uniswap
-/// @notice Contains a subset of the full ERC20 interface that is used in Uniswap V3
+/// @title 供 Uniswap 使用的最小化 ERC20 接口
+/// @notice 包含 Uniswap V3 中用到的完整 ERC20 接口的一个子集
 interface IERC20Minimal {
-    /// @notice Returns an account's balance in the token
-    /// @param account The account for which to look up the number of tokens it has, i.e. its balance
-    /// @return The number of tokens held by the account
+    /// @notice 返回某个账户持有的该代币余额
+    /// @param account 要查询其持有代币数量（即余额）的账户
+    /// @return 该账户持有的代币数量
     function balanceOf(address account) external view returns (uint256);
 
-    /// @notice Transfers the amount of token from the `msg.sender` to the recipient
-    /// @param recipient The account that will receive the amount transferred
-    /// @param amount The number of tokens to send from the sender to the recipient
-    /// @return Returns true for a successful transfer, false for an unsuccessful transfer
+    /// @notice 将指定数量的代币从 `msg.sender` 转给接收者
+    /// @param recipient 接收转账金额的账户
+    /// @param amount 从发送者转给接收者的代币数量
+    /// @return 转账成功返回 true，失败返回 false
     function transfer(address recipient, uint256 amount) external returns (bool);
 
-    /// @notice Returns the current allowance given to a spender by an owner
-    /// @param owner The account of the token owner
-    /// @param spender The account of the token spender
-    /// @return The current allowance granted by `owner` to `spender`
+    /// @notice 返回所有者授予某个花费者（spender）的当前授权额度
+    /// @param owner 代币所有者的账户
+    /// @param spender 代币花费者的账户
+    /// @return `owner` 授予 `spender` 的当前授权额度
     function allowance(address owner, address spender) external view returns (uint256);
 
-    /// @notice Sets the allowance of a spender from the `msg.sender` to the value `amount`
-    /// @param spender The account which will be allowed to spend a given amount of the owners tokens
-    /// @param amount The amount of tokens allowed to be used by `spender`
-    /// @return Returns true for a successful approval, false for unsuccessful
+    /// @notice 将 `msg.sender` 授予某个花费者的授权额度设置为 `amount`
+    /// @param spender 将被允许花费所有者一定数量代币的账户
+    /// @param amount 允许 `spender` 使用的代币数量
+    /// @return 授权成功返回 true，失败返回 false
     function approve(address spender, uint256 amount) external returns (bool);
 
-    /// @notice Transfers `amount` tokens from `sender` to `recipient` up to the allowance given to the `msg.sender`
-    /// @param sender The account from which the transfer will be initiated
-    /// @param recipient The recipient of the transfer
-    /// @param amount The amount of the transfer
-    /// @return Returns true for a successful transfer, false for unsuccessful
+    /// @notice 在授予 `msg.sender` 的授权额度内，将 `amount` 个代币从 `sender` 转给 `recipient`
+    /// @param sender 转账的发起账户（代币转出方）
+    /// @param recipient 转账的接收者
+    /// @param amount 转账数量
+    /// @return 转账成功返回 true，失败返回 false
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 
-    /// @notice Event emitted when tokens are transferred from one address to another, either via `#transfer` or `#transferFrom`.
-    /// @param from The account from which the tokens were sent, i.e. the balance decreased
-    /// @param to The account to which the tokens were sent, i.e. the balance increased
-    /// @param value The amount of tokens that were transferred
+    /// @notice 当代币通过 `#transfer` 或 `#transferFrom` 从一个地址转到另一个地址时触发的事件。
+    /// @param from 代币转出的账户，即余额减少的一方
+    /// @param to 代币转入的账户，即余额增加的一方
+    /// @param value 转移的代币数量
     event Transfer(address indexed from, address indexed to, uint256 value);
 
-    /// @notice Event emitted when the approval amount for the spender of a given owner's tokens changes.
-    /// @param owner The account that approved spending of its tokens
-    /// @param spender The account for which the spending allowance was modified
-    /// @param value The new allowance from the owner to the spender
+    /// @notice 当某个所有者的代币对某个花费者的授权额度发生变化时触发的事件。
+    /// @param owner 批准他人花费其代币的账户
+    /// @param spender 花费授权额度被修改的账户
+    /// @param value 所有者授予花费者的新授权额度
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }

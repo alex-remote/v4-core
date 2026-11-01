@@ -26,25 +26,25 @@ contract Fuzzers is StdUtils {
     {
         int256 liquidityMaxPerTick = int256(uint256(Pool.tickSpacingToMaxLiquidityPerTick(key.tickSpacing)));
 
-        // Finally bound the seeded liquidity by either the max per tick, or by the amount allowed in the position range.
+        // 最后，用每个 tick 的流动性上限或头寸区间允许的数量（取较小者）来约束种子流动性。
         int256 liquidityMax = liquidityMaxByAmount > liquidityMaxPerTick ? liquidityMaxPerTick : liquidityMaxByAmount;
         _vm.assume(liquidityMax != 0);
         return bound(liquidityDeltaUnbounded, 1, liquidityMax);
     }
 
-    // Uses tickSpacingToMaxLiquidityPerTick/2 as one of the possible bounds.
-    // Potentially adjust this value to be more strict for positions that touch the same tick.
+    // 使用 tickSpacingToMaxLiquidityPerTick/2 作为可能的上界之一。
+    // 对于触及同一 tick 的多个头寸，可能需要将该值调整得更严格。
     function boundLiquidityDeltaTightly(
         PoolKey memory key,
         int256 liquidityDeltaUnbounded,
         int256 liquidityMaxByAmount,
         uint256 maxPositions
     ) internal pure returns (int256) {
-        // Divide by half to bound liquidity more. TODO: Probably a better way to do this.
+        // 除以一半以更严格地约束流动性。TODO：可能有更好的做法。
         int256 liquidityMaxTightBound =
             int256(uint256(Pool.tickSpacingToMaxLiquidityPerTick(key.tickSpacing)) / maxPositions);
 
-        // Finally bound the seeded liquidity by either the max per tick, or by the amount allowed in the position range.
+        // 最后，用每个 tick 的流动性上限或头寸区间允许的数量（取较小者）来约束种子流动性。
         int256 liquidityMax =
             liquidityMaxByAmount > liquidityMaxTightBound ? liquidityMaxTightBound : liquidityMaxByAmount;
         _vm.assume(liquidityMax != 0);
@@ -56,7 +56,7 @@ contract Fuzzers is StdUtils {
         pure
         returns (int256)
     {
-        // First get the maximum amount0 and maximum amount1 that can be deposited at this range.
+        // 首先获取在该区间内可存入的最大 amount0 和最大 amount1。
         (uint256 maxAmount0, uint256 maxAmount1) = LiquidityAmounts.getAmountsForLiquidity(
             sqrtPriceX96,
             TickMath.getSqrtPriceAtTick(tickLower),
@@ -64,9 +64,9 @@ contract Fuzzers is StdUtils {
             uint128(type(int128).max)
         );
 
-        // Compare the max amounts (defined by the range of the position) to the max amount constrained by the type container.
-        // The true maximum should be the minimum of the two.
-        // (ie If the position range allows a deposit of more then int128.max in any token, then here we cap it at int128.max.)
+        // 将最大数量（由头寸区间决定）与类型容器所限制的最大数量进行比较。
+        // 真正的最大值应取两者中的较小者。
+        // （即如果头寸区间允许任一代币存入超过 int128.max 的数量，则此处将其上限截断为 int128.max。）
 
         uint256 amount0 = uint256(type(uint128).max / 2);
         uint256 amount1 = uint256(type(uint128).max / 2);
@@ -103,7 +103,7 @@ contract Fuzzers is StdUtils {
             )
         );
 
-        // round down ticks
+        // 将 tick 向下取整（对齐到 tick 间距）
         tickLower = (tickLower / tickSpacing) * tickSpacing;
         tickUpper = (tickUpper / tickSpacing) * tickSpacing;
 
@@ -128,10 +128,10 @@ contract Fuzzers is StdUtils {
         return TickMath.getSqrtPriceAtTick(int24(randomTick));
     }
 
-    /// @dev Obtain fuzzed and bounded parameters for creating liquidity
-    /// @param key The pool key
-    /// @param params IPoolManager.ModifyLiquidityParams Note that these parameters are unbounded
-    /// @param sqrtPriceX96 The current sqrt price
+    /// @dev 获取用于创建流动性的、经过模糊测试且已约束的参数
+    /// @param key 池子 key
+    /// @param params IPoolManager.ModifyLiquidityParams 注意这些参数是未经约束的
+    /// @param sqrtPriceX96 当前的平方根价格
     function createFuzzyLiquidityParams(PoolKey memory key, ModifyLiquidityParams memory params, uint160 sqrtPriceX96)
         internal
         pure
@@ -143,7 +143,7 @@ contract Fuzzers is StdUtils {
         result.liquidityDelta = boundLiquidityDelta(key, params.liquidityDelta, liquidityDeltaFromAmounts);
     }
 
-    // Creates liquidity parameters with a stricter bound. Should be used if multiple positions being initialized on the pool, with potential for tick overlap.
+    // 以更严格的上界创建流动性参数。当池子上会初始化多个头寸、且 tick 可能重叠时应使用此函数。
     function createFuzzyLiquidityParamsWithTightBound(
         PoolKey memory key,
         ModifyLiquidityParams memory params,
@@ -169,7 +169,7 @@ contract Fuzzers is StdUtils {
         delta = modifyLiquidityRouter.modifyLiquidity(key, result, hookData);
     }
 
-    // There exists possible positions in the pool, so we tighten the boundaries of liquidity.
+    // 池子中可能已存在头寸，因此收紧流动性的边界。
     function createFuzzyLiquidityWithTightBound(
         PoolModifyLiquidityTest modifyLiquidityRouter,
         PoolKey memory key,

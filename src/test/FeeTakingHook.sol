@@ -38,11 +38,11 @@ contract FeeTakingHook is BaseTestHooks {
         BalanceDelta delta,
         bytes calldata /* hookData **/
     ) external override onlyPoolManager returns (bytes4, int128) {
-        // fee will be in the unspecified token of the swap
+        // 手续费以本次兑换（swap）中未指定数量的那种代币收取
         bool specifiedTokenIs0 = (params.amountSpecified < 0 == params.zeroForOne);
         (Currency feeCurrency, int128 swapAmount) =
             (specifiedTokenIs0) ? (key.currency1, delta.amount1()) : (key.currency0, delta.amount0());
-        // if fee is on output, get the absolute output amount
+        // 如果手续费在输出侧，取输出数量的绝对值
         if (swapAmount < 0) swapAmount = -swapAmount;
 
         uint256 feeAmount = uint128(swapAmount) * SWAP_FEE_BIPS / TOTAL_BIPS;

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-/// @notice Interface for functions to access any transient storage slot in a contract
+/// @notice 用于访问合约中任意瞬态存储槽的函数接口
 interface IExttload {
-    /// @notice Called by external contracts to access transient storage of the contract
-    /// @param slot Key of slot to tload
-    /// @return value The value of the slot as bytes32
+    /// @notice 由外部合约调用，以访问本合约的瞬态存储
+    /// @param slot 要 tload 的存储槽的 key
+    /// @return value 该存储槽的值，类型为 bytes32
     function exttload(bytes32 slot) external view returns (bytes32 value);
 
-    /// @notice Called by external contracts to access sparse transient pool state
-    /// @param slots List of slots to tload
-    /// @return values List of loaded values
+    /// @notice 由外部合约调用，以访问稀疏的瞬态池子状态
+    /// @param slots 要执行 tload 的存储槽列表
+    /// @return values 已加载值的列表
     function exttload(bytes32[] calldata slots) external view returns (bytes32[] memory values);
 }

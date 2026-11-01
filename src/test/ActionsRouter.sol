@@ -9,7 +9,7 @@ import {MockERC20} from "solmate/src/test/utils/mocks/MockERC20.sol";
 import {StateLibrary} from "../libraries/StateLibrary.sol";
 import {TransientStateLibrary} from "../libraries/TransientStateLibrary.sol";
 
-// Supported Actions.
+// 支持的操作（Actions）。
 enum Actions {
     SETTLE,
     SETTLE_NATIVE,
@@ -26,21 +26,21 @@ enum Actions {
     TRANSFER_FROM,
     COLLECT_PROTOCOL_FEES
 }
-// TODO: Add other actions as needed.
+// TODO: 按需添加其他操作。
 // BURN,
 // MODIFY_POSITION,
 // INITIALIZE,
 // DONATE
 
-/// @notice A router that handles an arbitrary input of actions.
-/// TODO: Can continue to add functions per action.
+/// @notice 一个可处理任意操作序列输入的路由合约。
+/// TODO: 可以继续为每种操作添加对应的函数。
 contract ActionsRouter is IUnlockCallback, Test {
     using StateLibrary for IPoolManager;
     using TransientStateLibrary for IPoolManager;
 
     error ActionNotSupported();
 
-    // error thrown so that incorrectly formatted tests don't pass silently
+    // 抛出此错误，以免格式错误的测试静默通过
     error CheckParameters();
 
     IPoolManager manager;

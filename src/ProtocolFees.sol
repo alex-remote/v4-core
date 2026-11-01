@@ -11,7 +11,7 @@ import {PoolId} from "./types/PoolId.sol";
 import {Pool} from "./libraries/Pool.sol";
 import {CustomRevert} from "./libraries/CustomRevert.sol";
 
-/// @notice Contract handling the setting and accrual of protocol fees
+/// @notice 负责协议手续费设置与累积的合约
 abstract contract ProtocolFees is IProtocolFees, Owned {
     using ProtocolFeeLibrary for uint24;
     using Pool for Pool.State;
@@ -47,7 +47,7 @@ abstract contract ProtocolFees is IProtocolFees, Owned {
     {
         if (msg.sender != protocolFeeController) InvalidCaller.selector.revertWith();
         if (!currency.isAddressZero() && CurrencyReserves.getSyncedCurrency() == currency) {
-            // prevent transfer between the sync and settle balanceOfs (native settle uses msg.value)
+            // 防止在 sync 与 settle 两次 balanceOf 之间发生转账（原生代币结算使用 msg.value）
             ProtocolFeeCurrencySynced.selector.revertWith();
         }
 
@@ -56,11 +56,11 @@ abstract contract ProtocolFees is IProtocolFees, Owned {
         currency.transfer(recipient, amountCollected);
     }
 
-    /// @dev abstract internal function to allow the ProtocolFees contract to access the lock
+    /// @dev 抽象内部函数，使 ProtocolFees 合约能够访问锁
     function _isUnlocked() internal virtual returns (bool);
 
-    /// @dev abstract internal function to allow the ProtocolFees contract to access pool state
-    /// @dev this is overridden in PoolManager.sol to give access to the _pools mapping
+    /// @dev 抽象内部函数，使 ProtocolFees 合约能够访问池子状态
+    /// @dev 该函数在 PoolManager.sol 中被重写，以提供对 _pools 映射的访问
     function _getPool(PoolId id) internal virtual returns (Pool.State storage);
 
     function _updateProtocolFees(Currency currency, uint256 amount) internal {

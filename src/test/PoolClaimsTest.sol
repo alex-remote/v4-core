@@ -22,12 +22,12 @@ contract PoolClaimsTest is PoolTestBase {
         bool deposit;
     }
 
-    /// @notice Convert ERC20 into a claimable 6909
+    /// @notice 将 ERC20 转换为可认领的 6909 claims 凭证
     function deposit(Currency currency, address user, uint256 amount) external payable {
         manager.unlock(abi.encode(CallbackData(msg.sender, user, currency, amount, true)));
     }
 
-    /// @notice Redeem claimable 6909 for ERC20
+    /// @notice 将可认领的 6909 claims 凭证赎回为 ERC20
     function withdraw(Currency currency, address user, uint256 amount) external payable {
         manager.unlock(abi.encode(CallbackData(msg.sender, user, currency, amount, false)));
     }
@@ -38,11 +38,11 @@ contract PoolClaimsTest is PoolTestBase {
         CallbackData memory data = abi.decode(rawData, (CallbackData));
 
         if (data.deposit) {
-            data.currency.take(manager, data.user, data.amount, true); // mint 6909
-            data.currency.settle(manager, data.user, data.amount, false); // transfer ERC20
+            data.currency.take(manager, data.user, data.amount, true); // 铸造 6909
+            data.currency.settle(manager, data.user, data.amount, false); // 转入 ERC20
         } else {
-            data.currency.settle(manager, data.user, data.amount, true); // burn 6909
-            data.currency.take(manager, data.user, data.amount, false); // claim ERC20
+            data.currency.settle(manager, data.user, data.amount, true); // 销毁 6909
+            data.currency.take(manager, data.user, data.amount, false); // 领取 ERC20
         }
 
         return abi.encode(0);

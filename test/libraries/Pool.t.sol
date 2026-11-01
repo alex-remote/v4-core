@@ -43,7 +43,7 @@ contract PoolTest is Test {
     function test_modifyLiquidity(uint160 sqrtPriceX96, uint24 lpFee, Pool.ModifyLiquidityParams memory params)
         public
     {
-        // Assumptions tested in PoolManager.t.sol
+        // 这些假设已在 PoolManager.t.sol 中测试
         params.tickSpacing = int24(bound(params.tickSpacing, TickMath.MIN_TICK_SPACING, TickMath.MAX_TICK_SPACING));
 
         test_pool_initialize(sqrtPriceX96, lpFee);
@@ -69,7 +69,7 @@ contract PoolTest is Test {
                 abi.encodeWithSelector(TickBitmap.TickMisaligned.selector, params.tickUpper, params.tickSpacing)
             );
         } else {
-            // We need the assumptions above to calculate this
+            // 需要依赖上面的假设才能计算这一项
             uint256 maxInt128InTypeU256 = uint256(uint128(Constants.MAX_UINT128));
             (uint256 amount0, uint256 amount1) = LiquidityAmounts.getAmountsForLiquidity(
                 sqrtPriceX96,
@@ -94,14 +94,14 @@ contract PoolTest is Test {
         uint16 protocolFee1,
         Pool.SwapParams memory params
     ) public {
-        // Assumptions tested in PoolManager.t.sol
+        // 这些假设已在 PoolManager.t.sol 中测试
         params.tickSpacing = int24(bound(params.tickSpacing, TickMath.MIN_TICK_SPACING, TickMath.MAX_TICK_SPACING));
         lpFee = uint24(bound(lpFee, 0, MAX_LP_FEE));
         protocolFee0 = uint16(bound(protocolFee0, 0, MAX_PROTOCOL_FEE));
         protocolFee1 = uint16(bound(protocolFee1, 0, MAX_PROTOCOL_FEE));
         uint24 protocolFee = protocolFee1 << 12 | protocolFee0;
 
-        // initialize and add liquidity
+        // 初始化并添加流动性
         test_modifyLiquidity(
             sqrtPriceX96,
             lpFee,
@@ -172,11 +172,11 @@ contract PoolTest is Test {
 
     function test_fuzz_tickSpacingToMaxLiquidityPerTick(int24 tickSpacing) public pure {
         tickSpacing = int24(bound(tickSpacing, TickMath.MIN_TICK_SPACING, TickMath.MAX_TICK_SPACING));
-        // v3 math
+        // v3 的数学计算
         int24 minTick = (TickMath.MIN_TICK / tickSpacing) * tickSpacing;
         int24 maxTick = (TickMath.MAX_TICK / tickSpacing) * tickSpacing;
         uint24 numTicks = uint24((maxTick - minTick) / tickSpacing) + 1;
-        // assert that the result is the same as the v3 math or lower
+        // 断言结果与 v3 的数学计算相同或更低
         assertGe(type(uint128).max / numTicks, Pool.tickSpacingToMaxLiquidityPerTick(tickSpacing));
     }
 }

@@ -22,147 +22,147 @@
 | 英文 Markdown 文档（生成 `_zh.md`） | 4 | 179 |
 | **合计** | **148** | **19573** |
 
-**总进度：0 / 148 个文件已完成**
+**总进度：101 / 148 个文件已完成**
 
 ## 分批进度明细
 
 每个批次由一个子代理负责，并行执行（运行环境同一时刻最多 20 个子代理，其余批次排队，空出名额后立即派发）。
 
-### 批次 B01（5 个文件，250 行）— 状态：进行中（子代理已派发）
+### 批次 B01（5 个文件，250 行）— 状态：已完成 ✅
 
-- [ ] `src/ERC6909.sol` — 原 90 行 | 译后 — 行
-- [ ] `src/ERC6909Claims.sol` — 原 23 行 | 译后 — 行
-- [ ] `src/Extsload.sol` — 原 64 行 | 译后 — 行
-- [ ] `src/Exttload.sol` — 原 40 行 | 译后 — 行
-- [ ] `src/NoDelegateCall.sol` — 原 33 行 | 译后 — 行
+- [x] `src/ERC6909.sol` — 原 90 行 | 译后 90 行 ✅
+- [x] `src/ERC6909Claims.sol` — 原 23 行 | 译后 23 行 ✅
+- [x] `src/Extsload.sol` — 原 64 行 | 译后 64 行 ✅
+- [x] `src/Exttload.sol` — 原 40 行 | 译后 40 行 ✅
+- [x] `src/NoDelegateCall.sol` — 原 33 行 | 译后 33 行 ✅
 
-### 批次 B02（4 个文件，502 行）— 状态：进行中（子代理已派发）
+### 批次 B02（4 个文件，502 行）— 状态：已完成 ✅
 
-- [ ] `src/PoolManager.sol` — 原 395 行 | 译后 — 行
-- [ ] `src/ProtocolFees.sol` — 原 71 行 | 译后 — 行
-- [ ] `src/interfaces/IExtsload.sol` — 原 21 行 | 译后 — 行
-- [ ] `src/interfaces/IExttload.sol` — 原 15 行 | 译后 — 行
+- [x] `src/PoolManager.sol` — 原 395 行 | 译后 395 行 ✅
+- [x] `src/ProtocolFees.sol` — 原 71 行 | 译后 71 行 ✅
+- [x] `src/interfaces/IExtsload.sol` — 原 21 行 | 译后 21 行 ✅
+- [x] `src/interfaces/IExttload.sol` — 原 15 行 | 译后 15 行 ✅
 
-### 批次 B03（1 个文件，152 行）— 状态：进行中（子代理已派发）
+### 批次 B03（1 个文件，152 行）— 状态：已完成 ✅
 
-- [ ] `src/interfaces/IHooks.sol` — 原 152 行 | 译后 — 行
+- [x] `src/interfaces/IHooks.sol` — 原 152 行 | 译后 152 行 ✅
 
-### 批次 B04（1 个文件，217 行）— 状态：进行中（子代理已派发）
+### 批次 B04（1 个文件，217 行）— 状态：已完成 ✅
 
-- [ ] `src/interfaces/IPoolManager.sol` — 原 217 行 | 译后 — 行
+- [x] `src/interfaces/IPoolManager.sol` — 原 217 行 | 译后 217 行 ✅
 
-### 批次 B05（5 个文件，225 行）— 状态：进行中（子代理已派发）
+### 批次 B05（5 个文件，225 行）— 状态：已完成 ✅
 
-- [ ] `src/interfaces/IProtocolFees.sol` — 原 52 行 | 译后 — 行
-- [ ] `src/interfaces/callback/IUnlockCallback.sol` — 原 10 行 | 译后 — 行
-- [ ] `src/interfaces/external/IERC20Minimal.sol` — 原 48 行 | 译后 — 行
-- [ ] `src/interfaces/external/IERC6909Claims.sol` — 原 66 行 | 译后 — 行
-- [ ] `src/libraries/BitMath.sol` — 原 49 行 | 译后 — 行
+- [x] `src/interfaces/IProtocolFees.sol` — 原 52 行 | 译后 52 行 ✅
+- [x] `src/interfaces/callback/IUnlockCallback.sol` — 原 10 行 | 译后 10 行 ✅
+- [x] `src/interfaces/external/IERC20Minimal.sol` — 原 48 行 | 译后 48 行 ✅
+- [x] `src/interfaces/external/IERC6909Claims.sol` — 原 66 行 | 译后 66 行 ✅
+- [x] `src/libraries/BitMath.sol` — 原 49 行 | 译后 49 行 ✅
 
-### 批次 B06（6 个文件，336 行）— 状态：进行中（子代理已派发）
+### 批次 B06（6 个文件，336 行）— 状态：已完成 ✅
 
-- [ ] `src/libraries/CurrencyDelta.sol` — 原 42 行 | 译后 — 行
-- [ ] `src/libraries/CurrencyReserves.sol` — 原 39 行 | 译后 — 行
-- [ ] `src/libraries/CustomRevert.sol` — 原 120 行 | 译后 — 行
-- [ ] `src/libraries/FixedPoint128.sol` — 原 8 行 | 译后 — 行
-- [ ] `src/libraries/FixedPoint96.sol` — 原 10 行 | 译后 — 行
-- [ ] `src/libraries/FullMath.sol` — 原 117 行 | 译后 — 行
+- [x] `src/libraries/CurrencyDelta.sol` — 原 42 行 | 译后 42 行 ✅
+- [x] `src/libraries/CurrencyReserves.sol` — 原 39 行 | 译后 39 行 ✅
+- [x] `src/libraries/CustomRevert.sol` — 原 120 行 | 译后 120 行 ✅
+- [x] `src/libraries/FixedPoint128.sol` — 原 8 行 | 译后 8 行 ✅
+- [x] `src/libraries/FixedPoint96.sol` — 原 10 行 | 译后 10 行 ✅
+- [x] `src/libraries/FullMath.sol` — 原 117 行 | 译后 117 行 ✅
 
-### 批次 B07（6 个文件，531 行）— 状态：进行中（子代理已派发）
+### 批次 B07（6 个文件，531 行）— 状态：已完成 ✅
 
-- [ ] `src/libraries/Hooks.sol` — 原 340 行 | 译后 — 行
-- [ ] `src/libraries/LPFeeLibrary.sol` — 原 79 行 | 译后 — 行
-- [ ] `src/libraries/LiquidityMath.sol` — 原 20 行 | 译后 — 行
-- [ ] `src/libraries/Lock.sol` — 原 28 行 | 译后 — 行
-- [ ] `src/libraries/NonzeroDeltaCount.sol` — 原 35 行 | 译后 — 行
-- [ ] `src/libraries/ParseBytes.sol` — 原 29 行 | 译后 — 行
+- [x] `src/libraries/Hooks.sol` — 原 340 行 | 译后 340 行 ✅
+- [x] `src/libraries/LPFeeLibrary.sol` — 原 79 行 | 译后 79 行 ✅
+- [x] `src/libraries/LiquidityMath.sol` — 原 20 行 | 译后 20 行 ✅
+- [x] `src/libraries/Lock.sol` — 原 28 行 | 译后 28 行 ✅
+- [x] `src/libraries/NonzeroDeltaCount.sol` — 原 35 行 | 译后 35 行 ✅
+- [x] `src/libraries/ParseBytes.sol` — 原 29 行 | 译后 29 行 ✅
 
 ### 批次 B08（1 个文件，613 行）— 状态：进行中（子代理已派发）
 
 - [ ] `src/libraries/Pool.sol` — 原 613 行 | 译后 — 行
 
-### 批次 B09（3 个文件，210 行）— 状态：进行中（子代理已派发）
+### 批次 B09（3 个文件，210 行）— 状态：已完成 ✅
 
-- [ ] `src/libraries/Position.sol` — 原 103 行 | 译后 — 行
-- [ ] `src/libraries/ProtocolFeeLibrary.sol` — 原 47 行 | 译后 — 行
-- [ ] `src/libraries/SafeCast.sol` — 原 60 行 | 译后 — 行
+- [x] `src/libraries/Position.sol` — 原 103 行 | 译后 103 行 ✅
+- [x] `src/libraries/ProtocolFeeLibrary.sol` — 原 47 行 | 译后 47 行 ✅
+- [x] `src/libraries/SafeCast.sol` — 原 60 行 | 译后 60 行 ✅
 
-### 批次 B10（1 个文件，289 行）— 状态：进行中（子代理已派发）
+### 批次 B10（1 个文件，289 行）— 状态：已完成 ✅
 
-- [ ] `src/libraries/SqrtPriceMath.sol` — 原 289 行 | 译后 — 行
+- [x] `src/libraries/SqrtPriceMath.sol` — 原 289 行 | 译后 289 行 ✅
 
-### 批次 B11（1 个文件，349 行）— 状态：进行中（子代理已派发）
+### 批次 B11（1 个文件，349 行）— 状态：已完成 ✅
 
-- [ ] `src/libraries/StateLibrary.sol` — 原 349 行 | 译后 — 行
+- [x] `src/libraries/StateLibrary.sol` — 原 349 行 | 译后 349 行 ✅
 
-### 批次 B12（2 个文件，230 行）— 状态：进行中（子代理已派发）
+### 批次 B12（2 个文件，230 行）— 状态：已完成 ✅
 
-- [ ] `src/libraries/SwapMath.sol` — 原 108 行 | 译后 — 行
-- [ ] `src/libraries/TickBitmap.sol` — 原 122 行 | 译后 — 行
+- [x] `src/libraries/SwapMath.sol` — 原 108 行 | 译后 108 行 ✅
+- [x] `src/libraries/TickBitmap.sol` — 原 122 行 | 译后 122 行 ✅
 
-### 批次 B13（4 个文件，486 行）— 状态：进行中（子代理已派发）
+### 批次 B13（4 个文件，486 行）— 状态：已完成 ✅
 
-- [ ] `src/libraries/TickMath.sol` — 原 238 行 | 译后 — 行
-- [ ] `src/libraries/TransientStateLibrary.sol` — 原 49 行 | 译后 — 行
-- [ ] `src/libraries/UnsafeMath.sol` — 原 29 行 | 译后 — 行
-- [ ] `src/test/ActionsRouter.sol` — 原 170 行 | 译后 — 行
+- [x] `src/libraries/TickMath.sol` — 原 238 行 | 译后 238 行 ✅
+- [x] `src/libraries/TransientStateLibrary.sol` — 原 49 行 | 译后 49 行 ✅
+- [x] `src/libraries/UnsafeMath.sol` — 原 29 行 | 译后 29 行 ✅
+- [x] `src/test/ActionsRouter.sol` — 原 170 行 | 译后 170 行 ✅
 
-### 批次 B14（9 个文件，608 行）— 状态：进行中（子代理已派发）
+### 批次 B14（9 个文件，608 行）— 状态：已完成 ✅
 
-- [ ] `src/test/BaseTestHooks.sol` — 原 109 行 | 译后 — 行
-- [ ] `src/test/CurrencyTest.sol` — 原 30 行 | 译后 — 行
-- [ ] `src/test/CustomCurveHook.sol` — 原 71 行 | 译后 — 行
-- [ ] `src/test/DeltaReturningHook.sol` — 原 100 行 | 译后 — 行
-- [ ] `src/test/DynamicFeesTestHook.sol` — 原 40 行 | 译后 — 行
-- [ ] `src/test/DynamicReturnFeeTestHook.sol` — 原 39 行 | 译后 — 行
-- [ ] `src/test/EmptyRevertContract.sol` — 原 9 行 | 译后 — 行
-- [ ] `src/test/EmptyTestHooks.sol` — 原 119 行 | 译后 — 行
-- [ ] `src/test/FeeTakingHook.sol` — 原 91 行 | 译后 — 行
+- [x] `src/test/BaseTestHooks.sol` — 原 109 行 | 译后 109 行 ✅
+- [x] `src/test/CurrencyTest.sol` — 原 30 行 | 译后 30 行 ✅
+- [x] `src/test/CustomCurveHook.sol` — 原 71 行 | 译后 71 行 ✅
+- [x] `src/test/DeltaReturningHook.sol` — 原 100 行 | 译后 100 行 ✅
+- [x] `src/test/DynamicFeesTestHook.sol` — 原 40 行 | 译后 40 行 ✅
+- [x] `src/test/DynamicReturnFeeTestHook.sol` — 原 39 行 | 译后 39 行 ✅
+- [x] `src/test/EmptyRevertContract.sol` — 原 9 行 | 译后 9 行 ✅
+- [x] `src/test/EmptyTestHooks.sol` — 原 119 行 | 译后 119 行 ✅
+- [x] `src/test/FeeTakingHook.sol` — 原 91 行 | 译后 91 行 ✅
 
-### 批次 B15（14 个文件，946 行）— 状态：进行中（子代理已派发）
+### 批次 B15（14 个文件，946 行）— 状态：已完成 ✅
 
-- [ ] `src/test/Fuzzers.sol` — 原 184 行 | 译后 — 行
-- [ ] `src/test/HooksTest.sol` — 原 73 行 | 译后 — 行
-- [ ] `src/test/LPFeeTakingHook.sol` — 原 65 行 | 译后 — 行
-- [ ] `src/test/LiquidityMathTest.sol` — 原 10 行 | 译后 — 行
-- [ ] `src/test/MockContract.sol` — 原 57 行 | 译后 — 行
-- [ ] `src/test/MockERC6909Claims.sol` — 原 22 行 | 译后 — 行
-- [ ] `src/test/MockHooks.sol` — 原 140 行 | 译后 — 行
-- [ ] `src/test/NativeERC20.sol` — 原 50 行 | 译后 — 行
-- [ ] `src/test/NoDelegateCallTest.sol` — 原 32 行 | 译后 — 行
-- [ ] `src/test/PoolClaimsTest.sol` — 原 50 行 | 译后 — 行
-- [ ] `src/test/PoolDonateTest.sol` — 原 68 行 | 译后 — 行
-- [ ] `src/test/PoolEmptyUnlockTest.sol` — 原 25 行 | 译后 — 行
-- [ ] `src/test/PoolModifyLiquidityTest.sol` — 原 96 行 | 译后 — 行
-- [ ] `src/test/PoolModifyLiquidityTestNoChecks.sol` — 原 74 行 | 译后 — 行
+- [x] `src/test/Fuzzers.sol` — 原 184 行 | 译后 184 行 ✅
+- [x] `src/test/HooksTest.sol` — 原 73 行 | 译后 73 行 ✅
+- [x] `src/test/LPFeeTakingHook.sol` — 原 65 行 | 译后 65 行 ✅
+- [x] `src/test/LiquidityMathTest.sol` — 原 10 行 | 译后 10 行 ✅
+- [x] `src/test/MockContract.sol` — 原 57 行 | 译后 57 行 ✅
+- [x] `src/test/MockERC6909Claims.sol` — 原 22 行 | 译后 22 行 ✅
+- [x] `src/test/MockHooks.sol` — 原 140 行 | 译后 140 行 ✅
+- [x] `src/test/NativeERC20.sol` — 原 50 行 | 译后 50 行 ✅
+- [x] `src/test/NoDelegateCallTest.sol` — 原 32 行 | 译后 32 行 ✅
+- [x] `src/test/PoolClaimsTest.sol` — 原 50 行 | 译后 50 行 ✅
+- [x] `src/test/PoolDonateTest.sol` — 原 68 行 | 译后 68 行 ✅
+- [x] `src/test/PoolEmptyUnlockTest.sol` — 原 25 行 | 译后 25 行 ✅
+- [x] `src/test/PoolModifyLiquidityTest.sol` — 原 96 行 | 译后 96 行 ✅
+- [x] `src/test/PoolModifyLiquidityTestNoChecks.sol` — 原 74 行 | 译后 74 行 ✅
 
-### 批次 B16（14 个文件，1409 行）— 状态：进行中（子代理已派发）
+### 批次 B16（14 个文件，1409 行）— 状态：已完成 ✅
 
-- [ ] `src/test/PoolNestedActionsTest.sol` — 原 236 行 | 译后 — 行
-- [ ] `src/test/PoolSwapTest.sol` — 原 117 行 | 译后 — 行
-- [ ] `src/test/PoolTakeTest.sol` — 原 61 行 | 译后 — 行
-- [ ] `src/test/PoolTestBase.sol` — 原 31 行 | 译后 — 行
-- [ ] `src/test/ProtocolFeesImplementation.sol` — 原 38 行 | 译后 — 行
-- [ ] `src/test/ProxyPoolManager.sol` — 原 222 行 | 译后 — 行
-- [ ] `src/test/SkipCallsTestHook.sol` — 原 193 行 | 译后 — 行
-- [ ] `src/test/SqrtPriceMathEchidnaTest.sol` — 原 198 行 | 译后 — 行
-- [ ] `src/test/SwapRouterNoChecks.sol` — 原 49 行 | 译后 — 行
-- [ ] `src/test/TestERC20.sol` — 原 55 行 | 译后 — 行
-- [ ] `src/test/TestInvalidERC20.sol` — 原 56 行 | 译后 — 行
-- [ ] `src/test/TickMathEchidnaTest.sol` — 原 22 行 | 译后 — 行
-- [ ] `src/test/TickMathTest.sol` — 原 42 行 | 译后 — 行
-- [ ] `src/test/TickOverflowSafetyEchidnaTest.sol` — 原 89 行 | 译后 — 行
+- [x] `src/test/PoolNestedActionsTest.sol` — 原 236 行 | 译后 236 行 ✅
+- [x] `src/test/PoolSwapTest.sol` — 原 117 行 | 译后 117 行 ✅
+- [x] `src/test/PoolTakeTest.sol` — 原 61 行 | 译后 61 行 ✅
+- [x] `src/test/PoolTestBase.sol` — 原 31 行 | 译后 31 行 ✅
+- [x] `src/test/ProtocolFeesImplementation.sol` — 原 38 行 | 译后 38 行 ✅
+- [x] `src/test/ProxyPoolManager.sol` — 原 222 行 | 译后 222 行 ✅
+- [x] `src/test/SkipCallsTestHook.sol` — 原 193 行 | 译后 193 行 ✅
+- [x] `src/test/SqrtPriceMathEchidnaTest.sol` — 原 198 行 | 译后 198 行 ✅
+- [x] `src/test/SwapRouterNoChecks.sol` — 原 49 行 | 译后 49 行 ✅
+- [x] `src/test/TestERC20.sol` — 原 55 行 | 译后 55 行 ✅
+- [x] `src/test/TestInvalidERC20.sol` — 原 56 行 | 译后 56 行 ✅
+- [x] `src/test/TickMathEchidnaTest.sol` — 原 22 行 | 译后 22 行 ✅
+- [x] `src/test/TickMathTest.sol` — 原 42 行 | 译后 42 行 ✅
+- [x] `src/test/TickOverflowSafetyEchidnaTest.sol` — 原 89 行 | 译后 89 行 ✅
 
-### 批次 B17（8 个文件，446 行）— 状态：进行中（子代理已派发）
+### 批次 B17（8 个文件，446 行）— 状态：已完成 ✅
 
-- [ ] `src/types/BalanceDelta.sol` — 原 72 行 | 译后 — 行
-- [ ] `src/types/BeforeSwapDelta.sol` — 原 38 行 | 译后 — 行
-- [ ] `src/types/Currency.sol` — 原 119 行 | 译后 — 行
-- [ ] `src/types/PoolId.sol` — 原 17 行 | 译后 — 行
-- [ ] `src/types/PoolKey.sol` — 原 22 行 | 译后 — 行
-- [ ] `src/types/PoolOperation.sol` — 原 26 行 | 译后 — 行
-- [ ] `src/types/Slot0.sol` — 原 94 行 | 译后 — 行
-- [ ] `test/CurrencyReserves.t.sol` — 原 58 行 | 译后 — 行
+- [x] `src/types/BalanceDelta.sol` — 原 72 行 | 译后 72 行 ✅
+- [x] `src/types/BeforeSwapDelta.sol` — 原 38 行 | 译后 38 行 ✅
+- [x] `src/types/Currency.sol` — 原 119 行 | 译后 119 行 ✅
+- [x] `src/types/PoolId.sol` — 原 17 行 | 译后 17 行 ✅
+- [x] `src/types/PoolKey.sol` — 原 22 行 | 译后 22 行 ✅
+- [x] `src/types/PoolOperation.sol` — 原 26 行 | 译后 26 行 ✅
+- [x] `src/types/Slot0.sol` — 原 94 行 | 译后 94 行 ✅
+- [x] `test/CurrencyReserves.t.sol` — 原 58 行 | 译后 58 行 ✅
 
 ### 批次 B18（7 个文件，1752 行）— 状态：进行中（子代理已派发）
 
@@ -174,17 +174,17 @@
 - [ ] `test/ModifyLiquidity.t.sol` — 原 312 行 | 译后 — 行
 - [ ] `test/NoDelegateCall.t.sol` — 原 83 行 | 译后 — 行
 
-### 批次 B19（3 个文件，983 行）— 状态：进行中（子代理已派发）
+### 批次 B19（3 个文件，983 行）— 状态：已完成 ✅
 
-- [ ] `test/PoolManager.clear.t.sol` — 原 227 行 | 译后 — 行
-- [ ] `test/PoolManager.gas.spec.ts` — 原 566 行 | 译后 — 行
-- [ ] `test/PoolManager.swap.t.sol` — 原 190 行 | 译后 — 行
+- [x] `test/PoolManager.clear.t.sol` — 原 227 行 | 译后 227 行 ✅
+- [x] `test/PoolManager.gas.spec.ts` — 原 566 行 | 译后 566 行 ✅
+- [x] `test/PoolManager.swap.t.sol` — 原 190 行 | 译后 190 行 ✅
 
-### 批次 B20（3 个文件，1753 行）— 状态：进行中（子代理已派发）
+### 批次 B20（3 个文件，1753 行）— 状态：已完成 ✅
 
-- [ ] `test/PoolManager.t.sol` — 原 1262 行 | 译后 — 行
-- [ ] `test/PoolManagerInitialize.t.sol` — 原 320 行 | 译后 — 行
-- [ ] `test/ProtocolFeesImplementation.t.sol` — 原 171 行 | 译后 — 行
+- [x] `test/PoolManager.t.sol` — 原 1262 行 | 译后 1262 行 ✅
+- [x] `test/PoolManagerInitialize.t.sol` — 原 320 行 | 译后 320 行 ✅
+- [x] `test/ProtocolFeesImplementation.t.sol` — 原 171 行 | 译后 171 行 ✅
 
 ### 批次 B21（10 个文件，1626 行）— 状态：排队中（等待空闲子代理）
 
@@ -199,19 +199,19 @@
 - [ ] `test/libraries/BitMath.t.sol` — 原 125 行 | 译后 — 行
 - [ ] `test/libraries/FullMath.t.sol` — 原 212 行 | 译后 — 行
 
-### 批次 B22（11 个文件，2076 行）— 状态：排队中（等待空闲子代理）
+### 批次 B22（11 个文件，2076 行）— 状态：已完成 ✅
 
-- [ ] `test/libraries/Hooks.t.sol` — 原 1046 行 | 译后 — 行
-- [ ] `test/libraries/LPFeeLibrary.t.sol` — 原 88 行 | 译后 — 行
-- [ ] `test/libraries/LiquidityMath.t.sol` — 原 59 行 | 译后 — 行
-- [ ] `test/libraries/Lock.t.sol` — 原 23 行 | 译后 — 行
-- [ ] `test/libraries/NonzeroDeltaCount.t.sol` — 原 46 行 | 译后 — 行
-- [ ] `test/libraries/Pool.t.sol` — 原 182 行 | 译后 — 行
-- [ ] `test/libraries/PoolId.t.sol` — 原 14 行 | 译后 — 行
-- [ ] `test/libraries/Position.t.sol` — 原 82 行 | 译后 — 行
-- [ ] `test/libraries/ProtocolFeeLibrary.t.sol` — 原 87 行 | 译后 — 行
-- [ ] `test/libraries/SafeCast.t.sol` — 原 100 行 | 译后 — 行
-- [ ] `test/libraries/SqrtPriceMath.t.sol` — 原 349 行 | 译后 — 行
+- [x] `test/libraries/Hooks.t.sol` — 原 1046 行 | 译后 1046 行 ✅
+- [x] `test/libraries/LPFeeLibrary.t.sol` — 原 88 行 | 译后 88 行 ✅
+- [x] `test/libraries/LiquidityMath.t.sol` — 原 59 行 | 译后 59 行 ✅
+- [x] `test/libraries/Lock.t.sol` — 原 23 行 | 译后 23 行 ✅
+- [x] `test/libraries/NonzeroDeltaCount.t.sol` — 原 46 行 | 译后 46 行 ✅
+- [x] `test/libraries/Pool.t.sol` — 原 182 行 | 译后 182 行 ✅
+- [x] `test/libraries/PoolId.t.sol` — 原 14 行 | 译后 14 行 ✅
+- [x] `test/libraries/Position.t.sol` — 原 82 行 | 译后 82 行 ✅
+- [x] `test/libraries/ProtocolFeeLibrary.t.sol` — 原 87 行 | 译后 87 行 ✅
+- [x] `test/libraries/SafeCast.t.sol` — 原 100 行 | 译后 100 行 ✅
+- [x] `test/libraries/SqrtPriceMath.t.sol` — 原 349 行 | 译后 349 行 ✅
 
 ### 批次 B23（10 个文件，1889 行）— 状态：排队中（等待空闲子代理）
 

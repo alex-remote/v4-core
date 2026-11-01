@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/// @notice Interface for claims over a contract balance, wrapped as a ERC6909
+/// @notice 对合约余额的 claims 凭证的接口，以 ERC6909 的形式封装
 interface IERC6909Claims {
     /*//////////////////////////////////////////////////////////////
-                                 EVENTS
+                                 事件
     //////////////////////////////////////////////////////////////*/
 
     event OperatorSet(address indexed owner, address indexed operator, bool approved);
@@ -14,53 +14,53 @@ interface IERC6909Claims {
     event Transfer(address caller, address indexed from, address indexed to, uint256 indexed id, uint256 amount);
 
     /*//////////////////////////////////////////////////////////////
-                                 FUNCTIONS
+                                 函数
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Owner balance of an id.
-    /// @param owner The address of the owner.
-    /// @param id The id of the token.
-    /// @return amount The balance of the token.
+    /// @notice 所有者在某个 id 上的余额。
+    /// @param owner 所有者的地址。
+    /// @param id 代币的 id。
+    /// @return amount 该代币的余额。
     function balanceOf(address owner, uint256 id) external view returns (uint256 amount);
 
-    /// @notice Spender allowance of an id.
-    /// @param owner The address of the owner.
-    /// @param spender The address of the spender.
-    /// @param id The id of the token.
-    /// @return amount The allowance of the token.
+    /// @notice 花费者在某个 id 上的授权额度。
+    /// @param owner 所有者的地址。
+    /// @param spender 花费者的地址。
+    /// @param id 代币的 id。
+    /// @return amount 该代币的授权额度。
     function allowance(address owner, address spender, uint256 id) external view returns (uint256 amount);
 
-    /// @notice Checks if a spender is approved by an owner as an operator
-    /// @param owner The address of the owner.
-    /// @param spender The address of the spender.
-    /// @return approved The approval status.
+    /// @notice 检查某个花费者是否被所有者批准为操作员（operator）
+    /// @param owner 所有者的地址。
+    /// @param spender 花费者的地址。
+    /// @return approved 批准状态。
     function isOperator(address owner, address spender) external view returns (bool approved);
 
-    /// @notice Transfers an amount of an id from the caller to a receiver.
-    /// @param receiver The address of the receiver.
-    /// @param id The id of the token.
-    /// @param amount The amount of the token.
-    /// @return bool True, always, unless the function reverts
+    /// @notice 将某个 id 的一定数量代币从调用者转给接收者。
+    /// @param receiver 接收者的地址。
+    /// @param id 代币的 id。
+    /// @param amount 代币的数量。
+    /// @return bool 始终返回 True，除非函数回滚（revert）
     function transfer(address receiver, uint256 id, uint256 amount) external returns (bool);
 
-    /// @notice Transfers an amount of an id from a sender to a receiver.
-    /// @param sender The address of the sender.
-    /// @param receiver The address of the receiver.
-    /// @param id The id of the token.
-    /// @param amount The amount of the token.
-    /// @return bool True, always, unless the function reverts
+    /// @notice 将某个 id 的一定数量代币从发送者转给接收者。
+    /// @param sender 发送者的地址。
+    /// @param receiver 接收者的地址。
+    /// @param id 代币的 id。
+    /// @param amount 代币的数量。
+    /// @return bool 始终返回 True，除非函数回滚（revert）
     function transferFrom(address sender, address receiver, uint256 id, uint256 amount) external returns (bool);
 
-    /// @notice Approves an amount of an id to a spender.
-    /// @param spender The address of the spender.
-    /// @param id The id of the token.
-    /// @param amount The amount of the token.
-    /// @return bool True, always
+    /// @notice 向某个花费者授权某个 id 的一定数量代币。
+    /// @param spender 花费者的地址。
+    /// @param id 代币的 id。
+    /// @param amount 代币的数量。
+    /// @return bool 始终返回 True
     function approve(address spender, uint256 id, uint256 amount) external returns (bool);
 
-    /// @notice Sets or removes an operator for the caller.
-    /// @param operator The address of the operator.
-    /// @param approved The approval status.
-    /// @return bool True, always
+    /// @notice 为调用者设置或移除一个操作员。
+    /// @param operator 操作员的地址。
+    /// @param approved 批准状态。
+    /// @return bool 始终返回 True
     function setOperator(address operator, bool approved) external returns (bool);
 }

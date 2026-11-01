@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {Test} from "forge-std/Test.sol";
 
-/// @dev This token contract simulates the ERC20 representation of a native token where on `transfer` and `transferFrom` the native balances are modified using a precompile
+/// @dev 该代币合约模拟原生代币的 ERC20 表示形式：在 `transfer` 和 `transferFrom` 时通过预编译合约修改原生代币余额
 contract NativeERC20 is Test {
     string public name = "NativeERC20";
     string public symbol = "NERC20";

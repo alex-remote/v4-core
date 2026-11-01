@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {IExtsload} from "./interfaces/IExtsload.sol";
 
-/// @notice Enables public storage access for efficient state retrieval by external contracts.
+/// @notice 开放公共的存储访问，便于外部合约高效地读取状态。
 /// https://eips.ethereum.org/EIPS/eip-2330#rationale
 abstract contract Extsload is IExtsload {
     /// @inheritdoc IExtsload
@@ -19,13 +19,13 @@ abstract contract Extsload is IExtsload {
         assembly ("memory-safe") {
             let memptr := mload(0x40)
             let start := memptr
-            // A left bit-shift of 5 is equivalent to multiplying by 32 but costs less gas.
+            // 左移 5 位等价于乘以 32，但消耗的 gas 更少。
             let length := shl(5, nSlots)
-            // The abi offset of dynamic array in the returndata is 32.
+            // 返回数据（returndata）中动态数组的 abi 偏移量为 32。
             mstore(memptr, 0x20)
-            // Store the length of the array returned
+            // 存储返回数组的长度
             mstore(add(memptr, 0x20), nSlots)
-            // update memptr to the first location to hold a result
+            // 将 memptr 更新为存放第一个结果的位置
             memptr := add(memptr, 0x40)
             let end := add(memptr, length)
             for {} 1 {} {
@@ -43,13 +43,13 @@ abstract contract Extsload is IExtsload {
         assembly ("memory-safe") {
             let memptr := mload(0x40)
             let start := memptr
-            // for abi encoding the response - the array will be found at 0x20
+            // 用于对返回值做 abi 编码——数组位于偏移 0x20 处
             mstore(memptr, 0x20)
-            // next we store the length of the return array
+            // 接着存储返回数组的长度
             mstore(add(memptr, 0x20), slots.length)
-            // update memptr to the first location to hold an array entry
+            // 将 memptr 更新为存放第一个数组元素的位置
             memptr := add(memptr, 0x40)
-            // A left bit-shift of 5 is equivalent to multiplying by 32 but costs less gas.
+            // 左移 5 位等价于乘以 32，但消耗的 gas 更少。
             let end := add(memptr, shl(5, slots.length))
             let calldataptr := slots.offset
             for {} 1 {} {

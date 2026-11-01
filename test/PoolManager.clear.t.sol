@@ -21,7 +21,7 @@ contract ClearTest is Test, Deployers {
         Actions[] memory actions = new Actions[](2);
         bytes[] memory params = new bytes[](2);
 
-        // Apply a negative delta.
+        // 施加一个负的 delta。
         actions[0] = Actions.TAKE;
         params[0] = abi.encode(currency0, address(this), amount);
 
@@ -37,7 +37,7 @@ contract ClearTest is Test, Deployers {
         Actions[] memory actions = new Actions[](5);
         bytes[] memory params = new bytes[](5);
 
-        // Apply a positive delta.
+        // 施加一个正的 delta。
         actions[0] = Actions.SYNC;
         params[0] = abi.encode(currency0);
 
@@ -47,11 +47,11 @@ contract ClearTest is Test, Deployers {
         actions[2] = Actions.SETTLE;
         params[2] = abi.encode(currency0);
 
-        // Delta should be equal to the positive amount.
+        // delta 应等于该正数额。
         actions[3] = Actions.ASSERT_DELTA_EQUALS;
         params[3] = abi.encode(currency0, address(actionsRouter), amount);
 
-        // Clear for 1 greater than the delta.
+        // 以比 delta 大 1 的数额执行 clear。
         actions[4] = Actions.CLEAR;
         params[4] = abi.encode(currency0, amount + 1, false, "");
 
@@ -64,7 +64,7 @@ contract ClearTest is Test, Deployers {
         Actions[] memory actions = new Actions[](5);
         bytes[] memory params = new bytes[](5);
 
-        // Apply a positive delta.
+        // 施加一个正的 delta。
         actions[0] = Actions.SYNC;
         params[0] = abi.encode(currency0);
 
@@ -77,7 +77,7 @@ contract ClearTest is Test, Deployers {
         actions[3] = Actions.ASSERT_DELTA_EQUALS;
         params[3] = abi.encode(currency0, address(actionsRouter), amount);
 
-        // Clear for 1 less than the delta.
+        // 以比 delta 小 1 的数额执行 clear。
         actions[4] = Actions.CLEAR;
         params[4] = abi.encode(currency0, amount - 1, false, "");
 
@@ -90,7 +90,7 @@ contract ClearTest is Test, Deployers {
         Actions[] memory actions = new Actions[](5);
         bytes[] memory params = new bytes[](5);
 
-        // Apply a positive delta.
+        // 施加一个正的 delta。
         actions[0] = Actions.SYNC;
         params[0] = abi.encode(currency0);
 
@@ -103,7 +103,7 @@ contract ClearTest is Test, Deployers {
         actions[3] = Actions.ASSERT_DELTA_EQUALS;
         params[3] = abi.encode(currency0, address(actionsRouter), amount);
 
-        // Clear with 0.
+        // 以 0 执行 clear。
         actions[4] = Actions.CLEAR;
         params[4] = abi.encode(currency0, 0, false, "");
 
@@ -121,7 +121,7 @@ contract ClearTest is Test, Deployers {
         actions[1] = Actions.ASSERT_DELTA_EQUALS;
         params[1] = abi.encode(currency0, address(actionsRouter), 0);
 
-        // Clear with 0.
+        // 以 0 执行 clear。
         actions[2] = Actions.CLEAR;
         params[2] = abi.encode(currency0, 0, false, "");
 
@@ -145,7 +145,7 @@ contract ClearTest is Test, Deployers {
         actions[1] = Actions.ASSERT_DELTA_EQUALS;
         params[1] = abi.encode(currency0, address(actionsRouter), 0);
 
-        // Clear with nonzero.
+        // 以非零数额执行 clear。
         actions[2] = Actions.CLEAR;
         params[2] = abi.encode(currency0, amount, false, "");
 
@@ -158,7 +158,7 @@ contract ClearTest is Test, Deployers {
         Actions[] memory actions = new Actions[](8);
         bytes[] memory params = new bytes[](8);
 
-        // Apply a positive delta.
+        // 施加一个正的 delta。
         actions[0] = Actions.SYNC;
         params[0] = abi.encode(currency0);
 
@@ -168,15 +168,15 @@ contract ClearTest is Test, Deployers {
         actions[2] = Actions.SETTLE;
         params[2] = abi.encode(currency0);
 
-        // Delta should be equal to the positive amount.
+        // delta 应等于该正数额。
         actions[3] = Actions.ASSERT_DELTA_EQUALS;
         params[3] = abi.encode(currency0, address(actionsRouter), amount);
 
-        // Assert nonzero delta count is 1.
+        // 断言非零 delta 计数为 1。
         actions[4] = Actions.ASSERT_NONZERO_DELTA_COUNT_EQUALS;
         params[4] = abi.encode(1);
 
-        // Clear the exact delta amount.
+        // 以与 delta 完全相等的数额执行 clear。
         actions[5] = Actions.CLEAR;
         params[5] = abi.encode(currency0, amount, false, "");
 
@@ -194,7 +194,7 @@ contract ClearTest is Test, Deployers {
         Actions[] memory actions = new Actions[](8);
         bytes[] memory params = new bytes[](8);
 
-        // Apply a positive delta.
+        // 施加一个正的 delta。
         actions[0] = Actions.SYNC;
         params[0] = abi.encode(currency0);
 
@@ -204,15 +204,15 @@ contract ClearTest is Test, Deployers {
         actions[2] = Actions.SETTLE;
         params[2] = abi.encode(currency0);
 
-        // Delta should be equal to the positive amount.
+        // delta 应等于该正数额。
         actions[3] = Actions.ASSERT_DELTA_EQUALS;
         params[3] = abi.encode(currency0, address(actionsRouter), amount);
 
-        // Assert nonzero delta count is 1.
+        // 断言非零 delta 计数为 1。
         actions[4] = Actions.ASSERT_NONZERO_DELTA_COUNT_EQUALS;
         params[4] = abi.encode(1);
 
-        // Clear the exact delta amount.
+        // 以与 delta 完全相等的数额执行 clear。
         actions[5] = Actions.CLEAR;
         params[5] = abi.encode(currency0, amount, true, "clear");
 

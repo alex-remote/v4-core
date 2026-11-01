@@ -73,11 +73,11 @@ contract ProtocolFeeLibraryTest is Test {
         if (lpFee < LPFeeLibrary.MAX_LP_FEE) {
             assertLe(swapFee, LPFeeLibrary.MAX_LP_FEE);
         } else {
-            // if lp fee is equal to max, swap fee can never be larger
+            // 如果 LP 手续费等于最大值，兑换（swap）手续费永远不可能更大
             assertEq(swapFee, LPFeeLibrary.MAX_LP_FEE);
         }
 
-        // protocolFee + lpFee(1_000_000 - protocolFee) / 1_000_000 (rounded up)
+        // protocolFee + lpFee(1_000_000 - protocolFee) / 1_000_000（向上取整）
         uint256 expectedSwapFee = protocolFee + (1e6 - protocolFee) * uint256(lpFee) / 1e6;
         if (((1e6 - protocolFee) * uint256(lpFee)) % 1e6 != 0) expectedSwapFee++;
 

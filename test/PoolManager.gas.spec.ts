@@ -225,13 +225,13 @@
 //         await modifyPosition(startingTick - 4 * tickSpacing, startingTick - 2 * tickSpacing, expandTo18Decimals(1))
 //         expect((await getSlot0()).tick).to.eq(startingTick)
 //         await snapshotGasCost(swapExact0For1(expandTo18Decimals(1), wallet.address))
-//         expect((await getSlot0()).tick).to.be.lt(startingTick - 4 * tickSpacing) // we crossed the last tick
+//         expect((await getSlot0()).tick).to.be.lt(startingTick - 4 * tickSpacing) // 我们已越过最后一个 tick
 //       })
 //
 //       it('first swap in block, large swap crossing a single initialized tick', async () => {
 //         await modifyPosition(minTick, startingTick - 2 * tickSpacing, expandTo18Decimals(1))
 //         await snapshotGasCost(swapExact0For1(expandTo18Decimals(1), wallet.address))
-//         expect((await getSlot0()).tick).to.be.lt(startingTick - 2 * tickSpacing) // we crossed the last tick
+//         expect((await getSlot0()).tick).to.be.lt(startingTick - 2 * tickSpacing) // 我们已越过最后一个 tick
 //       })
 //
 //       it('second swap in block, large swap crossing several initialized ticks', async () => {
@@ -245,9 +245,9 @@
 //       it('second swap in block, large swap crossing a single initialized tick', async () => {
 //         await modifyPosition(minTick, startingTick - 2 * tickSpacing, expandTo18Decimals(1))
 //         await swapExact0For1(expandTo18Decimals(1).div(10000), wallet.address)
-//         expect((await getSlot0()).tick).to.be.gt(startingTick - 2 * tickSpacing) // we didn't cross the initialized tick
+//         expect((await getSlot0()).tick).to.be.gt(startingTick - 2 * tickSpacing) // 我们未越过已初始化的 tick
 //         await snapshotGasCost(swapExact0For1(expandTo18Decimals(1), wallet.address))
-//         expect((await getSlot0()).tick).to.be.lt(startingTick - 2 * tickSpacing) // we crossed the last tick
+//         expect((await getSlot0()).tick).to.be.lt(startingTick - 2 * tickSpacing) // 我们已越过最后一个 tick
 //       })
 //     })
 //
@@ -503,13 +503,13 @@
 //         await modifyPosition(startingTick - 4 * tickSpacing, startingTick - 2 * tickSpacing, expandTo18Decimals(1))
 //         expect((await getSlot0()).tick).to.eq(startingTick)
 //         await snapshotGasCost(swapExact0For1(expandTo18Decimals(1), wallet.address))
-//         expect((await getSlot0()).tick).to.be.lt(startingTick - 4 * tickSpacing) // we crossed the last tick
+//         expect((await getSlot0()).tick).to.be.lt(startingTick - 4 * tickSpacing) // 我们已越过最后一个 tick
 //       })
 //
 //       it('first swap in block, large swap crossing a single initialized tick', async () => {
 //         await modifyPosition(minTick, startingTick - 2 * tickSpacing, expandTo18Decimals(1))
 //         await snapshotGasCost(swapExact0For1(expandTo18Decimals(1), wallet.address))
-//         expect((await getSlot0()).tick).to.be.lt(startingTick - 2 * tickSpacing) // we crossed the last tick
+//         expect((await getSlot0()).tick).to.be.lt(startingTick - 2 * tickSpacing) // 我们已越过最后一个 tick
 //       })
 //
 //       it('second swap in block, large swap crossing several initialized ticks', async () => {
@@ -523,9 +523,9 @@
 //       it('second swap in block, large swap crossing a single initialized tick', async () => {
 //         await modifyPosition(minTick, startingTick - 2 * tickSpacing, expandTo18Decimals(1))
 //         await swapExact0For1(expandTo18Decimals(1).div(10000), wallet.address)
-//         expect((await getSlot0()).tick).to.be.gt(startingTick - 2 * tickSpacing) // we didn't cross the initialized tick
+//         expect((await getSlot0()).tick).to.be.gt(startingTick - 2 * tickSpacing) // 我们未越过已初始化的 tick
 //         await snapshotGasCost(swapExact0For1(expandTo18Decimals(1), wallet.address))
-//         expect((await getSlot0()).tick).to.be.lt(startingTick - 2 * tickSpacing) // we crossed the last tick
+//         expect((await getSlot0()).tick).to.be.lt(startingTick - 2 * tickSpacing) // 我们已越过最后一个 tick
 //       })
 //     })
 //

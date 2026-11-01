@@ -17,7 +17,7 @@ contract PoolEmptyUnlockTest is IUnlockCallback {
         manager.unlock("");
     }
 
-    /// @notice Called by the pool manager on `msg.sender` when the manager is unlocked
+    /// @notice 当 manager 被解锁时，由 pool manager 在 `msg.sender` 上调用
     function unlockCallback(bytes calldata) external override returns (bytes memory) {
         emit UnlockCallback();
         return "";

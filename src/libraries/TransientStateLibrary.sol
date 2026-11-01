@@ -7,14 +7,14 @@ import {CurrencyReserves} from "./CurrencyReserves.sol";
 import {NonzeroDeltaCount} from "./NonzeroDeltaCount.sol";
 import {Lock} from "./Lock.sol";
 
-/// @notice A helper library to provide state getters that use exttload
+/// @notice 一个辅助库，提供基于 exttload 的状态读取函数
 library TransientStateLibrary {
-    /// @notice returns the reserves for the synced currency
-    /// @param manager The pool manager contract.
+    /// @notice 返回已同步代币的储备
+    /// @param manager PoolManager 合约。
 
-    /// @return uint256 The reserves of the currency.
-    /// @dev returns 0 if the reserves are not synced or value is 0.
-    /// Checks the synced currency to only return valid reserve values (after a sync and before a settle).
+    /// @return uint256 该代币的储备。
+    /// @dev 若储备未同步或其值为 0，则返回 0。
+    /// 通过检查已同步的代币，确保只返回有效的储备值（在同步之后、结算之前）。
     function getSyncedReserves(IPoolManager manager) internal view returns (uint256) {
         if (getSyncedCurrency(manager).isAddressZero()) return 0;
         return uint256(manager.exttload(CurrencyReserves.RESERVES_OF_SLOT));
@@ -24,14 +24,14 @@ library TransientStateLibrary {
         return Currency.wrap(address(uint160(uint256(manager.exttload(CurrencyReserves.CURRENCY_SLOT)))));
     }
 
-    /// @notice Returns the number of nonzero deltas open on the PoolManager that must be zeroed out before the contract is locked
+    /// @notice 返回 PoolManager 上未结清的非零 delta 数量，这些 delta 必须在合约锁定前清零
     function getNonzeroDeltaCount(IPoolManager manager) internal view returns (uint256) {
         return uint256(manager.exttload(NonzeroDeltaCount.NONZERO_DELTA_COUNT_SLOT));
     }
 
-    /// @notice Get the current delta for a caller in the given currency
-    /// @param target The credited account address
-    /// @param currency The currency for which to lookup the delta
+    /// @notice 获取某调用者在给定代币上的当前 delta
+    /// @param target 被记账的账户地址
+    /// @param currency 要查询 delta 的代币
     function currencyDelta(IPoolManager manager, address target, Currency currency) internal view returns (int256) {
         bytes32 key;
         assembly ("memory-safe") {
@@ -42,7 +42,7 @@ library TransientStateLibrary {
         return int256(uint256(manager.exttload(key)));
     }
 
-    /// @notice Returns whether the contract is unlocked or not
+    /// @notice 返回合约当前是否处于解锁状态
     function isUnlocked(IPoolManager manager) internal view returns (bool) {
         return manager.exttload(Lock.IS_UNLOCKED_SLOT) != 0x0;
     }

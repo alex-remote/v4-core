@@ -5,12 +5,12 @@ import {PoolKey} from "./PoolKey.sol";
 
 type PoolId is bytes32;
 
-/// @notice Library for computing the ID of a pool
+/// @notice 用于计算池子 ID 的库
 library PoolIdLibrary {
-    /// @notice Returns value equal to keccak256(abi.encode(poolKey))
+    /// @notice 返回值等于 keccak256(abi.encode(poolKey))
     function toId(PoolKey memory poolKey) internal pure returns (PoolId poolId) {
         assembly ("memory-safe") {
-            // 0xa0 represents the total size of the poolKey struct (5 slots of 32 bytes)
+            // 0xa0 表示 poolKey 结构体的总大小（5 个 32 字节的槽位）
             poolId := keccak256(poolKey, 0xa0)
         }
     }

@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 import {SafeCast} from "../libraries/SafeCast.sol";
 
-/// @dev Two `int128` values packed into a single `int256` where the upper 128 bits represent the amount0
-/// and the lower 128 bits represent the amount1.
+/// @dev 将两个 `int128` 值打包进单个 `int256`，其中高 128 位表示 amount0，
+/// 低 128 位表示 amount1。
 type BalanceDelta is int256;
 
 using {add as +, sub as -, eq as ==, neq as !=} for BalanceDelta global;
@@ -53,9 +53,9 @@ function neq(BalanceDelta a, BalanceDelta b) pure returns (bool) {
     return BalanceDelta.unwrap(a) != BalanceDelta.unwrap(b);
 }
 
-/// @notice Library for getting the amount0 and amount1 deltas from the BalanceDelta type
+/// @notice 用于从 BalanceDelta 类型中获取 amount0 与 amount1 的 delta 的库
 library BalanceDeltaLibrary {
-    /// @notice A BalanceDelta of 0
+    /// @notice 值为 0 的 BalanceDelta
     BalanceDelta public constant ZERO_DELTA = BalanceDelta.wrap(0);
 
     function amount0(BalanceDelta balanceDelta) internal pure returns (int128 _amount0) {

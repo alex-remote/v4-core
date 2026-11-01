@@ -43,7 +43,7 @@ contract PoolNestedActionsTest is Test, IUnlockCallback {
         manager.unlock(data);
     }
 
-    /// @notice Called by the pool manager on `msg.sender` when the manager is unlocked
+    /// @notice 当 manager 处于解锁状态时，由 pool manager 在 `msg.sender` 上调用
     function unlockCallback(bytes calldata data) external override returns (bytes memory) {
         Action[] memory actions = abi.decode(data, (Action[]));
         if (actions.length == 1 && actions[0] == Action.NESTED_SELF_UNLOCK) {
@@ -166,7 +166,7 @@ contract NestedActionExecutor is Test, PoolTestBase {
         key.currency1.settle(manager, user, uint256(-deltaThisAfter1), false);
     }
 
-    // cannot remove non-existent liquidity - need to perform an add before this removal
+    // 不能移除不存在的流动性——在此次移除之前需要先执行一次添加
     function _removeLiquidity(address caller) internal {
         bool unlocked = manager.isUnlocked();
         assertEq(unlocked, true);
@@ -229,7 +229,7 @@ contract NestedActionExecutor is Test, PoolTestBase {
         assertEq(price, Constants.SQRT_PRICE_1_2);
     }
 
-    // This will never actually be used - its just to allow us to use the PoolTestBase helper contact
+    // 该函数实际上永远不会被使用——只是为了让我们能够使用 PoolTestBase 辅助合约
     function unlockCallback(bytes calldata) external pure override returns (bytes memory) {
         return "";
     }

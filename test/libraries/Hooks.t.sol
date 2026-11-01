@@ -187,7 +187,7 @@ contract HooksTest is Test, Deployers {
         donateRouter.donate(key, 100, 200, ZERO_BYTES);
     }
 
-    // hook validation
+    // hook 校验
     function test_fuzz_validateHookPermissions_noHooks(uint160 addr) public view {
         uint160 preAddr = addr & clearAllHookPermissionsMask;
 
@@ -881,9 +881,9 @@ contract HooksTest is Test, Deployers {
 
     function test_fuzz_validateHookAddress_failsAllHooks(uint160 addr, uint16 mask) public {
         uint160 preAddr = addr & clearAllHookPermissionsMask;
-        // Set the upper `hooksPermissionCount` number of bits to get the full mask in uint16.
+        // 设置高位的 `hooksPermissionCount` 个比特位，得到 uint16 中的完整掩码。
         uint16 allHooksMask = uint16(~uint16(0));
-        // We want any combination except all hooks.
+        // 我们需要除“全部 hook”之外的任意组合。
         vm.assume(mask < (allHooksMask >> (16 - hookPermissionCount)));
         IHooks hookAddr = IHooks(address(uint160(preAddr) | uint160(mask)));
         vm.expectRevert(abi.encodeWithSelector(Hooks.HookAddressNotValid.selector, (address(hookAddr))));
@@ -909,10 +909,10 @@ contract HooksTest is Test, Deployers {
     }
 
     function test_fuzz_validateHookAddress_failsNoHooks(uint160 addr, uint16 mask) public {
-        // we only want hookPermissionCount of mask
+        // 我们只需要掩码中的 hookPermissionCount 个比特位
         mask = mask >> (16 - hookPermissionCount);
         uint160 preAddr = addr & clearAllHookPermissionsMask;
-        // We want any combination except no hooks.
+        // 我们需要除“没有任何 hook”之外的任意组合。
         vm.assume(mask != 0);
         IHooks hookAddr = IHooks(address(preAddr | uint160(mask)));
         vm.expectRevert(abi.encodeWithSelector(Hooks.HookAddressNotValid.selector, (address(hookAddr))));
@@ -981,7 +981,7 @@ contract HooksTest is Test, Deployers {
         assertFalse(Hooks.isValidHookAddress(IHooks(0x1000000000000000000000000000000000000000), 3000));
         assertFalse(Hooks.isValidHookAddress(IHooks(0x0001000000000000000000000000000000004000), 3000));
         assertFalse(Hooks.isValidHookAddress(IHooks(0x003840A85D5AF5bf1D1762F925BDaDdc42010000), 3000));
-        // not dynamic as another bit is dirty in the fee
+        // 不是动态手续费，因为手续费中还有其他比特位被置脏
         assertFalse(
             Hooks.isValidHookAddress(
                 IHooks(0x1000000000000000000000000000000000000000), LPFeeLibrary.DYNAMIC_FEE_FLAG | uint24(3000)
@@ -990,7 +990,7 @@ contract HooksTest is Test, Deployers {
     }
 
     function test_callHook_revertsWithBubbleUp() public {
-        // This test executes _callHook through beforeSwap.
+        // 本测试通过 beforeSwap 执行 _callHook。
         address beforeSwapFlag = address(uint160(Hooks.BEFORE_SWAP_FLAG));
         vm.etch(beforeSwapFlag, address(revertingHookImpl).code);
         BaseTestHooks revertingHook = BaseTestHooks(beforeSwapFlag);
@@ -1017,7 +1017,7 @@ contract HooksTest is Test, Deployers {
     }
 
     function test_callHook_revertsWithInternalErrorFailedHookCall() public {
-        // This test executes _callHook through beforeSwap.
+        // 本测试通过 beforeSwap 执行 _callHook。
         EmptyRevertContract emptyRevertingHookImpl = new EmptyRevertContract();
         address beforeSwapFlag = address(uint160(Hooks.BEFORE_SWAP_FLAG));
         vm.etch(beforeSwapFlag, address(emptyRevertingHookImpl).code);

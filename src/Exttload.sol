@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import {IExttload} from "./interfaces/IExttload.sol";
 
-/// @notice Enables public transient storage access for efficient state retrieval by external contracts.
+/// @notice 开放公共的瞬态存储访问，便于外部合约高效地读取状态。
 /// https://eips.ethereum.org/EIPS/eip-2330#rationale
 abstract contract Exttload is IExttload {
     /// @inheritdoc IExttload
@@ -19,13 +19,13 @@ abstract contract Exttload is IExttload {
         assembly ("memory-safe") {
             let memptr := mload(0x40)
             let start := memptr
-            // for abi encoding the response - the array will be found at 0x20
+            // 用于对返回值做 abi 编码——数组位于偏移 0x20 处
             mstore(memptr, 0x20)
-            // next we store the length of the return array
+            // 接着存储返回数组的长度
             mstore(add(memptr, 0x20), slots.length)
-            // update memptr to the first location to hold an array entry
+            // 将 memptr 更新为存放第一个数组元素的位置
             memptr := add(memptr, 0x40)
-            // A left bit-shift of 5 is equivalent to multiplying by 32 but costs less gas.
+            // 左移 5 位等价于乘以 32，但消耗的 gas 更少。
             let end := add(memptr, shl(5, slots.length))
             let calldataptr := slots.offset
             for {} 1 {} {

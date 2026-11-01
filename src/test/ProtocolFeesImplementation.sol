@@ -14,7 +14,7 @@ contract ProtocolFeesImplementation is ProtocolFees {
 
     constructor() ProtocolFees(msg.sender) {}
 
-    // Used to set the price of a pool to pretend that the pool has been initialized in order to successfully set a protocol fee
+    // 用于设置池子的价格，假装该池子已被初始化，从而能够成功设置协议手续费
     function setPrice(PoolKey memory key, uint160 sqrtPriceX96) public {
         Pool.State storage pool = _getPool(key.toId());
         pool.slot0 = pool.slot0.setSqrtPriceX96(sqrtPriceX96);
